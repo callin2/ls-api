@@ -21,7 +21,7 @@ for await (const item of sdk.api.getDwmChart({ shcode: '005930', gubun: '2', qry
 }
 ```
 
-- 여러 페이지의 결과를 반복적으로 요청해야 하는 API(즉, async generator를 반환하는 API)의 경우, 이는 과도한 요청을 피하기 위함이 아니라 API 제공 회사의 초당 요청 건수 제한(rate limit)을 준수하기 위해 SDK가 내부적으로 자동으로 요청을 스로틀(throttle)하도록 처리합니다.
+- 여러 페이지의 결과를 반복적으로 요청해야 하는 API(즉, async generator를 반환하는 API)의 경우, 이는 API 제공 회사의 초당 요청 건수 제한(rate limit)을 준수하기 위해 SDK가 내부적으로 자동으로 요청을 스로틀(throttle)하도록 처리합니다.
 
 환경 변수 (반드시 설정)
 - LS_API_KEY: API 키
