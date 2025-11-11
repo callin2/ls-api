@@ -1,0 +1,169 @@
+import {LSStockSDK} from '../src';
+import {filter, tap, map, scan, distinctUntilChanged} from 'rxjs/operators';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+
+interface TradingSignal {
+    type: 'BUY' | 'SELL' | 'HOLD';
+    price: number;
+    confidence: number;
+    reason: string;
+    timestamp: Date;
+    isHistorical: boolean;
+}
+
+interface PriceAnalysis {
+    currentPrice: number;
+    priceHistory: number[];
+    movingAverage: number;
+    priceChange: number;
+    volumeSpike: boolean;
+    isHistorical: boolean;
+    chetime: string;
+}
+
+// Simple moving average calculator
+const calculateMovingAverage = (prices: number[], period: number): number => {
+    if (prices.length < period) return prices[prices.length - 1] || 0;
+    const recentPrices = prices.slice(-period);
+    return recentPrices.reduce((sum, price) => sum + price, 0) / recentPrices.length;
+};
+
+// Simple trading signal generator
+const generateTradingSignal = (analysis: PriceAnalysis): TradingSignal => {
+    const {currentPrice, movingAverage, priceChange, volumeSpike} = analysis;
+
+    // Simple strategy: Buy when price is above moving average with volume spike
+    if (currentPrice > movingAverage && volumeSpike && priceChange > 0) {
+        return {
+            type: 'BUY',
+            price: currentPrice,
+            confidence: 0.7,
+            reason: 'Price above MA with volume spike',
+            timestamp: new Date(),
+            isHistorical: analysis.isHistorical
+        };
+    }
+
+    // Sell when price drops below moving average
+    if (currentPrice < movingAverage && priceChange < 0) {
+        return {
+            type: 'SELL',
+            price: currentPrice,
+            confidence: 0.6,
+            reason: 'Price below MA with negative change',
+            timestamp: new Date(),
+            isHistorical: analysis.isHistorical
+        };
+    }
+
+    return {
+        type: 'HOLD',
+        price: currentPrice,
+        confidence: 0.5,
+        reason: 'No clear signal',
+        timestamp: new Date(),
+        isHistorical: analysis.isHistorical
+    };
+};
+
+(async () => {
+    console.log('Starting trading stream example...');
+
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({ path: resolve(__dirname, '../.env') });
+
+    const sdk = await LSStockSDK.getInstance();
+
+    // Create stream for Samsung Electronics
+    const samsungStream = sdk.getTradeStream('016880', {
+        startTime: '09:00:00',
+        intervalMinutes: 1
+    });
+
+    // Create trading pipeline
+    samsungStream.pipe(
+        tap(console.log),
+        // Accumulate price history and calculate indicators
+        scan((acc: PriceAnalysis, data) => {
+            const newPriceHistory = [...acc.priceHistory, data.close].slice(-20); // Keep last 20 prices
+            const avgVolume = acc.priceHistory.length > 0 ?
+                newPriceHistory.reduce((sum, _, i) => sum + (acc.priceHistory[i] || 0), 0) / newPriceHistory.length :
+                data.volume;
+
+            return {
+                currentPrice: data.close,
+                priceHistory: newPriceHistory,
+                movingAverage: calculateMovingAverage(newPriceHistory, 5),
+                priceChange: data.diff,
+                volumeSpike: data.volume > avgVolume * 1.5, // Volume spike threshold
+                isHistorical: data.isHistorical,
+                chetime: data.chetime,
+            };
+        }, {
+            currentPrice: 0,
+            priceHistory: [],
+            movingAverage: 0,
+            priceChange: 0,
+            volumeSpike: false,
+            isHistorical: true,
+            chetime: '090000'
+        }),
+
+        // Generate trading signals
+        map(analysis => ({
+            analysis,
+            signal: generateTradingSignal(analysis)
+        })),
+
+        // Filter for actionable signals (not HOLD)
+        filter(({signal}) => signal.type !== 'HOLD'),
+
+        // Avoid duplicate signals
+        distinctUntilChanged((prev, curr) => prev.signal.type === curr.signal.type),
+
+        // Log and potentially execute trades
+        tap(({analysis, signal}) => {
+            console.log('\n=== TRADING SIGNAL ===');
+            console.log(`Signal: ${signal.type}`);
+            console.log(`Price: ${signal.price}`);
+            console.log(`Confidence: ${signal.confidence}`);
+            console.log(`Reason: ${signal.reason}`);
+            console.log(`MA: ${analysis.movingAverage.toFixed(2)}`);
+            console.log(`Volume Spike: ${analysis.volumeSpike}`);
+            console.log(`Time: ${signal.timestamp.toLocaleString()}`);
+            console.log(`isHistorical: ${analysis.isHistorical}`);
+            console.log(`chetime: ${analysis.chetime}`);
+
+            // Here you would execute actual trades
+            if (signal.type === 'BUY' && signal.confidence > 0.6) {
+                console.log('🟢 EXECUTING BUY ORDER');
+                // await sdk.api.orderStock({ ... });
+            } else if (signal.type === 'SELL' && signal.confidence > 0.6) {
+                console.log('🔴 EXECUTING SELL ORDER');
+                // await sdk.api.orderStock({ ... });
+            }
+        })
+    ).subscribe({
+        next: () => {
+        }, // Already handled in tap
+        error: (err) => console.error('Trading stream error:', err),
+        complete: () => console.log('Trading stream completed')
+    });
+
+
+    console.log('Trading streams started. Press Ctrl+C to stop...');
+
+    // Graceful shutdown
+    process.on('SIGINT', async () => {
+        console.log('\nShutting down trading streams...');
+        await sdk.releaseTradeStream('005930');
+        // await Promise.all(stocks.map(stock => sdk.releaseTradeStream(stock.code)));
+        await sdk.destroy();
+        process.exit(0);
+    });
+
+})().catch(console.error);

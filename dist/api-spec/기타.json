@@ -1,0 +1,31 @@
+{
+    "category": "기타",
+    "url_part": "etc",
+    "sub_categories": [
+        {
+            "sub_category": "time_search",
+            "name": "시간조회",
+            "url_part": "time_search",
+            "api_list": [
+                {
+                    "label": "시간조회(t0167)",
+                    "api_code": "t0167",
+                    "func_name": "getServerTime",
+                    "url": "/etc/time-search",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json; charset=utf-8",
+                        "tr_cd": "t0167",
+                        "tr_cont": "N",
+                        "tr_cont_key": "0"
+                    },
+                    "body": {
+                        "t0167InBlock": {
+                            "id": ""
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

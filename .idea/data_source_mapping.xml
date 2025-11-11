@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/f8f85b21-b4a1-4ae5-8dea-0e51924e9285/console.sql" value="f8f85b21-b4a1-4ae5-8dea-0e51924e9285" />
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/f8f85b21-b4a1-4ae5-8dea-0e51924e9285/console_1.sql" value="f8f85b21-b4a1-4ae5-8dea-0e51924e9285" />
+    <file url="file://$PROJECT_DIR$/examples/getAllThemes_test.ts" value="f8f85b21-b4a1-4ae5-8dea-0e51924e9285" />
+  </component>
+</project>

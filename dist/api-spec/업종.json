@@ -1,0 +1,225 @@
+{
+    "category": "업종",
+    "url_part": "indtp",
+    "sub_categories": [
+        {
+            "sub_category": "market_data",
+            "name": "시세",
+            "url_part": "market_data",
+            "api_list": [
+                {
+                    "label": "업종기간별추이(t1514)",
+                    "api_code": "t1514",
+                    "func_name": "getIndTrend",
+                    "url": "/indtp/market-data",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json; charset=utf-8",
+                        "tr_cd": "t1514",
+                        "tr_cont": "N",
+                        "tr_cont_key": "0"
+                    },
+                    "body": {
+                        "t1514InBlock": {
+                            "upcode": "001",
+                            "gubun1": " ",
+                            "gubun2": "1",
+                            "cts_date": " ",
+                            "cnt": 1,
+                            "rate_gbn": "1"
+                        }
+                    }
+                },
+                {
+                    "label": "전체업종(t8424)",
+                    "api_code": "t8424",
+                    "func_name": "getAllInd",
+                    "url": "/indtp/market-data",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json; charset=utf-8",
+                        "tr_cd": "t8424",
+                        "tr_cont": "N",
+                        "tr_cont_key": "0"
+                    },
+                    "body": {
+                        "t8424InBlock": {
+                            "gubun1": ""
+                        }
+                    }
+                },
+                {
+                    "label": "예상지수(t1485)",
+                    "api_code": "t1485",
+                    "url": "/indtp/market-data",
+                    "func_name": "getExpIdx",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json; charset=utf-8",
+                        "tr_cd": "t1485",
+                        "tr_cont": "N",
+                        "tr_cont_key": "0"
+                    },
+                    "body": {
+                        "t1485InBlock": {
+                            "upcode": "001",
+                            "gubun": "1"
+                        }
+                    }
+                },
+                {
+                    "label": "업종현재가(t1511)",
+                    "api_code": "t1511",
+                    "func_name": "getIndPrice",
+                    "url": "/indtp/market-data",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json; charset=utf-8",
+                        "tr_cd": "t1511",
+                        "tr_cont": "N",
+                        "tr_cont_key": "0"
+                    },
+                    "body": {
+                        "t1511InBlock": {
+                            "upcode": "001"
+                        }
+                    }
+                },
+                {
+                    "label": "업종별종목시세(t1516)",
+                    "api_code": "t1516",
+                    "func_name": "getIndStocks",
+                    "url": "/indtp/market-data",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json; charset=utf-8",
+                        "tr_cd": "t1516",
+                        "tr_cont": "N",
+                        "tr_cont_key": "0"
+                    },
+                    "body": {
+                        "t1516InBlock": {
+                            "upcode": "001",
+                            "gubun": "1",
+                            "shcode": ""
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "sub_category": "chart",
+            "name": "챠트",
+            "url_part": "chart",
+            "api_list": [
+                {
+                    "label": "업종챠트(종합)(t4203)",
+                    "api_code": "t4203",
+                    "func_name": "getIndChartSum",
+                    "url": "/indtp/chart",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json; charset=utf-8",
+                        "tr_cd": "t4203",
+                        "tr_cont": "N",
+                        "tr_cont_key": "0"
+                    },
+                    "body": {
+                        "t4203InBlock": {
+                            "shcode": "001",
+                            "gubun": "1",
+                            "ncnt": 1,
+                            "qrycnt": 1,
+                            "tdgb": "1",
+                            "sdate": " ",
+                            "edate": "",
+                            "cts_date": " ",
+                            "cts_time": " ",
+                            "cts_daygb": " "
+                        }
+                    }
+                },
+                {
+                    "label": "업종차트(틱/n틱)(t8417)",
+                    "api_code": "t8417",
+                    "func_name": "getIndChartTick",
+                    "url": "/indtp/chart",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json; charset=utf-8",
+                        "tr_cd": "t8417",
+                        "tr_cont": "N",
+                        "tr_cont_key": "0"
+                    },
+                    "body": {
+                        "t8417InBlock": {
+                            "shcode": "001",
+                            "ncnt": 1,
+                            "qrycnt": 1,
+                            "nday": "0",
+                            "sdate": " ",
+                            "stime": "",
+                            "edate": "99999999",
+                            "etime": "",
+                            "cts_date": " ",
+                            "cts_time": "",
+                            "comp_yn": "N"
+                        }
+                    }
+                },
+                {
+                    "label": "업종챠트(N분)(t8418)",
+                    "api_code": "t8418",
+                    "func_name": "getIndChartMin",
+                    "url": "/indtp/chart",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json; charset=utf-8",
+                        "tr_cd": "t8418",
+                        "tr_cont": "N",
+                        "tr_cont_key": "0"
+                    },
+                    "body": {
+                        "t8418InBlock": {
+                            "shcode": "001",
+                            "ncnt": 0,
+                            "qrycnt": 5,
+                            "nday": "0",
+                            "sdate": " ",
+                            "stime": "",
+                            "edate": "99999999",
+                            "etime": "",
+                            "cts_date": " ",
+                            "cts_time": "",
+                            "comp_yn": "N"
+                        }
+                    }
+                },
+                {
+                    "label": "업종챠트(일주월)(t8419)",
+                    "api_code": "t8419",
+                    "func_name": "getIndChartDWM",
+                    "url": "/indtp/chart",
+                    "method": "POST",
+                    "headers": {
+                        "content-type": "application/json; charset=utf-8",
+                        "tr_cd": "t8419",
+                        "tr_cont": "N",
+                        "tr_cont_key": "0"
+                    },
+                    "body": {
+                        "t8419InBlock": {
+                            "shcode": "001",
+                            "gubun": "2",
+                            "qrycnt": 5,
+                            "sdate": " ",
+                            "edate": "99999999",
+                            "cts_date": " ",
+                            "comp_yn": "N"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

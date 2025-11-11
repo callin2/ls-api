@@ -1,0 +1,272 @@
+// 동적 API 함수 타입 정의
+export type ApiFunctionSpec = {
+    label: string;
+    api_code: string;
+    func_name: string;
+    url: string;
+    method: string;
+    headers: object;
+    body: object;
+    throttle: number;
+};
+
+// Simple memoization utility
+function memoize<T extends (...args: any[]) => any>(fn: T): T {
+    const cache = new Map();
+    return ((...args: any[]) => {
+        const key = JSON.stringify(args);
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+        const result = fn(...args);
+        cache.set(key, result);
+        return result;
+    }) as T;
+}
+
+/**
+ * Creates a throttled async generator function for making API requests based on a given API specification.
+ *
+ * This factory function dynamically generates an async generator that handles API requests with throttling,
+ * memoization, and recursive pagination support. It is designed to work with APIs that require rate limiting
+ * and may return paginated results, such as the LS Securities OpenAPI.
+ *
+ * Features:
+ * - Throttles API calls to avoid exceeding rate limits (calls per second).
+ * - Handles recursive pagination by yielding results and making additional requests if continuation tokens are present.
+ * - Automatically injects authorization headers and handles request/response formatting.
+ * - Supports different input/output block structures depending on the API endpoint.
+ * - Returns an async generator function that yields each result item individually.
+ *
+ * @param {ApiFunctionSpec} apiSpec - The API specification object, including endpoint, method, headers, body, throttle, etc.
+ * @returns {Function} An async generator function that accepts an input block and yields API response items, respecting throttle limits.
+ *
+ * @throws {Error} If the apiSpec parameter is missing.
+ *
+ * @example
+ * const getStockInfo = await apiFunctionFactory({ ...apiSpec });
+ * for await (const item of getStockInfo(inputBlock)) {
+ *   // process item
+ * }
+ */
+async function _apiFunctionFactory(apiSpec: ApiFunctionSpec) {
+    if (!apiSpec) {
+        throw new Error(`apiSpec parameter missing.`);
+    }
+
+    const {api_code} = apiSpec;
+
+    // Helper to stringify apiSpec safely
+    function apiSpecInfo() {
+        try {
+            return JSON.stringify(apiSpec);
+        } catch (e) {
+            return String(apiSpec);
+        }
+    }
+
+    // Create a global queue-based throttle per api_code
+    const throttleQueues = (global as any)._lsApiThrottleQueues || ((global as any)._lsApiThrottleQueues = {});
+    if (!throttleQueues[api_code]) {
+        throttleQueues[api_code] = {
+            queue: [],
+            running: false,
+        };
+    }
+    const queueObj = throttleQueues[api_code];
+    // Add a buffer to the interval to avoid accidental overlap (e.g., 20ms)
+    const minInterval = 1000 / (apiSpec.throttle || 1) + 20;
+
+    const throttleGenerator = (
+        callsPerSecond: number,
+        generatorFn: {
+            (inputBlock: any, recursionCount?: number): any;
+            (arg0: any): any;
+        },
+    ) => {
+        return async function* (...args: any[]) {
+            // Wrap the generator in a promise and push to the queue
+            let resolveGen: (value: AsyncGenerator<any>) => void = () => {
+            };
+            const genPromise = new Promise<AsyncGenerator<any>>((resolve) => {
+                resolveGen = resolve;
+            });
+            queueObj.queue.push({args: Array.isArray(args) ? args : [args], resolveGen});
+
+            // Start the queue processor if not running
+            if (!queueObj.running) {
+                queueObj.running = true;
+                (async () => {
+                    while (queueObj.queue.length > 0) {
+                        const item = queueObj.queue.shift();
+                        // @ts-ignore
+                        const gen = generatorFn(...(item.args as any[]));
+                        item.resolveGen(gen);
+                        // Only wait for the API request to be created, not for generator to finish
+                        await new Promise(res => setTimeout(res, minInterval));
+                    }
+                    queueObj.running = false;
+                })();
+            }
+
+            // Wait for our turn and yield from the generator
+            const realGen = await genPromise;
+            for await (const val of realGen) {
+                yield val;
+            }
+        };
+    };
+
+    // Define the generator function that will be throttled
+    // @ts-ignore
+    async function* _api_generator(inputBlock: any, recursionCount = 0) {
+        // Limit recursion to prevent infinite loops
+        if (recursionCount >= 999) {
+            return;
+        }
+
+        // moved into retry loop below
+        let retryCount = 0;
+        let result: any = null;
+        let response: any = null;
+        while (true) {
+            // Prepare headers and body for each retry
+            const headers = JSON.parse(JSON.stringify(apiSpec.headers));
+            // @ts-ignore
+            headers['authorization'] = 'Bearer ' + global['ebest_token'].access_token;
+
+            const body = JSON.parse(JSON.stringify(apiSpec.body));
+            if (recursionCount > 0) {
+                headers['tr_cont'] = 'Y';
+                headers['tr_cont_key'] = '0';
+            }
+
+            // Check LS_API_CONFIG availability
+            const LS_API_CONFIG = {
+                baseUrl: process.env.LS_API_BASE_URL || 'https://openapi.ls-sec.co.kr:8080',
+                apiKey: process.env.LS_API_KEY || '',
+                apiSecret: process.env.LS_API_SECRET || '',
+                wsEndpoint: process.env.LS_WS_ENDPOINT || 'wss://openapi.ls-sec.co.kr:29443/websocket'
+            };
+
+            if (apiSpec.url == "/stock/order") {
+                body[api_code + 'InBlock1'] = inputBlock;
+            } else {
+                body[api_code + 'InBlock'] = inputBlock;
+            }
+            try {
+                response = await fetch(LS_API_CONFIG.baseUrl + apiSpec.url, {
+                    method: apiSpec.method,
+                    headers: headers,
+                    body: JSON.stringify(body),
+                });
+                try {
+                    result = await response.json();
+                } catch (err) {
+                    result = null;
+                }
+            } catch (err) {
+                throw new Error(` error in _apiFunctionFactory. apiSpec: ${apiSpecInfo()}\nError: ${err}`);
+            }
+
+            // Retry on rate limit error (IGW00201)
+            if (result && result.rsp_cd === 'IGW00201') {
+                retryCount++;
+                const retryDelay = 1500 + Math.floor(Math.random() * 500); // 1.5~2s
+                if (retryCount > 5) {
+                    console.error('sdk error result:', result, '\napiSpec:', apiSpecInfo());
+                    throw new Error(`API response error (rate limit, retried 5x) in _apiFunctionFactory. apiSpec: ${apiSpecInfo()}\nResult: ${JSON.stringify(result)}`);
+                }
+                await new Promise(res => setTimeout(res, retryDelay));
+                continue;
+            }
+
+            // Retry on token expired error (IGW00121)
+            if (result && result.rsp_cd === 'IGW00121') {
+                (global as any)['ebest_token'] = null;
+                continue;
+            }
+
+            if (response && response.status !== 200) {
+                console.error('sdk error result:', result, '\napiSpec:', apiSpecInfo());
+                throw new Error(`API response error (status ${response.status}) in _apiFunctionFactory. apiSpec: ${apiSpecInfo()}\nResult: ${JSON.stringify(result)}`);
+            }
+
+            if (result == null) {
+                throw new Error(`Failed to parse JSON response in _apiFunctionFactory. apiSpec: ${apiSpecInfo()}`);
+            }
+            break;
+        }
+
+        if (apiSpec.url == "/stock/order") {
+            yield result[api_code + 'OutBlock2'];
+            return;
+        }
+
+        if (!result[api_code + 'OutBlock1']) {
+            if (Array.isArray(result[api_code + 'OutBlock'])) {
+                for (const item of result[api_code + 'OutBlock']) {
+                    yield item;
+                }
+            } else if (result[api_code + 'OutBlock']) {
+                yield result[api_code + 'OutBlock'];
+            } else {
+                console.error('result!:', JSON.stringify(result));
+
+            }
+            return;
+        }
+
+        try {
+            // Yield each item in the result array
+            if(!Array.isArray(result[api_code + 'OutBlock1'])) {
+                yield result[api_code + 'OutBlock1'];
+                return;
+            }
+
+            for (const item of result[api_code + 'OutBlock1']) {
+                // item._orgBody = result
+                yield item;
+            }
+        }catch (error) {
+            console.error(result, api_code)
+            throw error;
+        }
+
+
+        if (
+            result[api_code + 'OutBlock'] &&
+            (result[api_code + 'OutBlock']['cts_date'] ||
+                result[api_code + 'OutBlock']['cts_time'] ||
+                result[api_code + 'OutBlock']['tr_cont_key'])
+        ) {
+            if (
+                result[api_code + 'OutBlock']['cts_date']
+                // && result[api_code + 'OutBlock']['cts_time'].length > 4
+            ) {
+                inputBlock['cts_date'] = result[api_code + 'OutBlock']['cts_date'];
+            }
+
+            if (
+                result[api_code + 'OutBlock']['cts_time'] &&
+                result[api_code + 'OutBlock']['cts_time'].length > 4
+            ) {
+                inputBlock['cts_time'] = result[api_code + 'OutBlock']['cts_time'];
+            } else if (result[api_code + 'OutBlock']['tr_cont_key']) {
+                inputBlock['tr_cont_key'] =
+                    result[api_code + 'OutBlock']['tr_cont_key'];
+            }
+
+            // Sleep 1 second before next request
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            // Recursively yield more results
+            yield* _api_generator(inputBlock, recursionCount + 1);
+        }
+    }
+
+    // Return the throttled generator
+    return throttleGenerator(apiSpec.throttle || 1, _api_generator);
+}
+
+export const apiFunctionFactory = memoize(_apiFunctionFactory);

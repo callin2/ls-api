@@ -1,0 +1,31 @@
+import {LSStockSDK} from '../src';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+
+(async () => {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({ path: resolve(__dirname, '../.env') });
+
+    let sdk = await LSStockSDK.getInstance();
+
+    let resultCount = 0
+    for await (const data2 of sdk.api.getVolumeSpike({
+        "gubun": "1",
+        "type1": "1",
+        "type2": "1",
+        "jc_num": 16794296,
+        "sprice": 0,
+        "eprice": 0,
+        "volume": 0,
+        "idx": 0,
+        "jc_num2": 111,
+        "exchgubun": "U"
+    })) {
+        resultCount++;
+        delete data2._orgBody
+        console.log(`📊 Result ${resultCount}:`, data2.hname, data2.price);
+    }
+})();
