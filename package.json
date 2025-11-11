@@ -12,7 +12,6 @@
     "@types/ws": "^8.18.1",
     "typescript": "^5.5.3"
   },
-  "private": true,
   "packageManager": "pnpm@9.0.0",
   "dependencies": {
     "dotenv": "^17.2.3",
