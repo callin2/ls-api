@@ -185,6 +185,8 @@ export class LSStockSDK {
      */
     private async addApiFunction(apiSpec: ApiFunctionSpec): Promise<void> {
         this.api[apiSpec.func_name] = await apiFunctionFactory(apiSpec);
+        // add alias by api_code as well
+        this.api[apiSpec.api_code] = await apiFunctionFactory(apiSpec);
     }
 
     /**
