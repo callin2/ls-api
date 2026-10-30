@@ -1,0 +1,137 @@
+import {LSStockSDK} from '../sdk';
+import {filter, tap, map} from 'rxjs/operators';
+import {StockService} from "../../../../routes/stock/service";
+import {concat, from} from "rxjs";
+
+
+import {addTimestamp, createBacktestPipeline, initializeOperators, PipelineConfig} from "stock-stream";
+import {candleStickEnrich} from "stock-stream"
+import {mtfStream$} from "stock-stream";
+import {inspect} from "node:util";
+// import {tag} from "../trading";
+
+
+
+const configs: PipelineConfig[] = [
+    {
+        name: 'computeMA',
+        alias: 'fastMA',
+        dependsOn: [],
+        options: { period: 5, source: { linkWith: '/close' } }
+    },
+    {
+        name: 'computeMA',
+        alias: 'slowMA',
+        dependsOn: [],
+        options: { period: 20, source: { linkWith: '/close' } }
+    },
+    {
+        name: 'detectCrossover',
+        alias: 'maCross',
+        dependsOn: ['fastMA', 'slowMA'],
+        options: {
+            fast: { linkWith: 'fastMA/average' },
+            slow: { linkWith: 'slowMA/average' }
+        }
+    },
+    {
+        name:"trendOperator",
+        alias:"pureTrend",
+        options: {}
+    },
+    {
+        name: "top30Ranker",
+        alias: "volumeRank",
+        options: {
+            period: 30,
+            sourceVolume: { linkWith: "/cvolume" },
+            sourceHighLow: {
+                high: { linkWith: "/high" },
+                low: { linkWith: "/low" }
+            }
+        },
+    },
+    {
+        name: "maxMin",
+        alias: "minmax_30",
+        options: {
+            period: 30,
+            source: { linkWith: "/close" }
+        },
+    },
+    {
+        name: "signal01",
+        alias: "signal-01",
+        dependsOn: ["pureTrend", "volumeRank", "minmax_30"],
+        options: {
+            trendSource: { linkWith: "pureTrend" },
+            maxMinSource: { linkWith: "minmax_30" },
+            top30Source: { linkWith: "volumeRank" }
+        },
+    },
+    {
+        name: "simulateTrading",
+        alias: "sim",
+        dependsOn: ["signal-01"],
+        options:  {
+            signalAlias: "signal-01",
+            initialBudget: 10000000,
+            quantityMode:'all-in'
+        }
+    },
+];
+
+
+
+(async () => {
+
+    await initializeOperators();
+    const pipeline = createBacktestPipeline(configs);
+
+
+    console.log('Starting stream test...');
+
+    const sdk = await LSStockSDK.getInstance();
+    const shcode = '432720'
+
+    const dailResult = await StockService.getDailyChartData(shcode, 100);
+    const dailyCandleStream = from(dailResult.rows)
+    // .pipe(
+    //     tag({isHistorical: true, isDailyCandle: true}),
+    // )
+
+    const samsungStream = sdk.getTradeStream(shcode, {
+        startTime: '09:00:00',
+        intervalMinutes: 1
+    });
+
+    // concat two streams: dailyCandleStream and samsungStream
+    const combinedStream = concat(dailyCandleStream, samsungStream);
+
+    const subscription =  combinedStream.pipe(
+        //======================================
+        candleStickEnrich({alias:'1m_candle', interval: '3m' }),
+        //======================================
+        addTimestamp({alias:'time'}),
+        pipeline,
+        filter(_=>!!_['sim'])
+    )
+    .subscribe({
+        next: (result: any) => {
+            console.log(result.chetime, inspect( result.sim ))
+        },
+        // error: (error: any) => reject(error),
+        // complete: () => resolve(processedResults)
+    });
+
+    setTimeout(async () => {
+        console.log('Cleaning up...');
+        subscription.unsubscribe();
+        await sdk.releaseTradeStream(shcode);
+    }, 10*60*1000); // 10 minutes
+
+})().catch(console.error);
+
+
+
+

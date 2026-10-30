@@ -1,0 +1,41 @@
+import {LSStockSDK, LSStockTradingSystem} from '../src/sdk';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+
+(async () => {
+    // @ts-ignore
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({path: resolve(__dirname, '../.env')});
+
+    const sdk = await LSStockSDK.getInstance()
+    const tradeSystem = await LSStockTradingSystem.getInstance();
+
+    let target_stocks = [
+        {
+            "shcode": "042700"
+        },
+        {
+            "shcode": "000660"
+        },
+        {
+            "shcode": "278470"
+        },
+    ]
+
+    let noop = () => {
+    }
+
+    target_stocks.forEach(stock => {
+        sdk.add_trade_hook_for_order(stock.shcode, {handleTradeData: console.log})
+    })
+
+    // 프로세스 종료 시 pool 정리
+    process.on('exit', async () => {
+        // await pool.end();
+        console.log('Database pool closed.');
+    });
+
+})();

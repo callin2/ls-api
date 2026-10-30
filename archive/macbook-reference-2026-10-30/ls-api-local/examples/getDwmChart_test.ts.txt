@@ -1,0 +1,33 @@
+import {LSStockSDK} from '../src/sdk';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+
+(async () => {
+
+
+    console.log('Testing getIndStocks API...');
+
+    // @ts-ignore
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({ path: resolve(__dirname, '../.env') });
+
+    let sdk = await LSStockSDK.getInstance();
+
+
+    for await (const data2 of sdk.api.getDwmChart({
+        shcode: '000100',
+        gubun: '2',
+        qrycnt: 10,
+        sdate: '20250609',
+        edate: '20250709',
+        cts_date: '',
+        comp_yn: 'N',
+        sujung: 'Y',
+    })) {
+        console.log(data2);
+
+    }
+})();

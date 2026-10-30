@@ -1,0 +1,35 @@
+import {LSStockSDK} from '../src/sdk';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+import {queryWithRetry, bulkInsertWithRetry} from "./database";
+
+(async () => {
+
+
+    console.log('Testing getStockList API...');
+
+    // @ts-ignore
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({ path: resolve(__dirname, '../.env') });
+
+    let sdk = await LSStockSDK.getInstance();
+
+
+
+        for await (const data2 of sdk.api.getStockList({
+            "gubun": "0"
+        })) {
+            console.log(data2);
+        }
+
+
+
+
+
+
+
+
+})();

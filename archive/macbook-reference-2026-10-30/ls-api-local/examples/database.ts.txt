@@ -1,0 +1,331 @@
+import { Pool } from 'pg';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import dotenv from 'dotenv';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+dotenv.config({ path: resolve(__dirname, '../.env') });
+
+console.log("DB HOST:", process.env.DB_HOST);
+
+// 테스트 환경에서는 데이터베이스 연결을 건너뛸 수 있도록 설정
+const isTestEnvironment = process.env.NODE_ENV === 'test';
+
+// Database connection state tracking
+let isReconnecting = false;
+let reconnectAttempts = 0;
+const maxReconnectAttempts = 10;
+const reconnectDelay = 5000; // 5 seconds
+
+// Database connection configuration
+const getDbConfig = () => ({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: parseInt(process.env.DB_PORT || '5432'),
+  connectionTimeoutMillis: parseInt(process.env.DB_CONNECTION_TIMEOUT || '15000'),
+  idleTimeoutMillis: 60000,
+  max: 30,
+  min: 5,
+  statement_timeout: parseInt(process.env.DB_STATEMENT_TIMEOUT || '60000'),
+  query_timeout: parseInt(process.env.DB_QUERY_TIMEOUT || '60000'),
+  application_name: 'ls-stock-sdk',
+  keepAlive: true,
+  keepAliveInitialDelayMillis: 10000,
+  ssl: false,
+  connect_timeout: 15,
+});
+
+// 데이터베이스 연결 설정
+let pool: Pool[] = [];
+const dbConfig = getDbConfig();
+pool[0] = new Pool(dbConfig);
+let reconnectTimeoutId: NodeJS.Timeout | null = null;
+
+// Reconnection function
+async function reconnectDatabase() {
+  if (isReconnecting) return;
+  isReconnecting = true;
+  console.log('🔄 Starting database reconnection process...');
+
+  // Clear any existing timeout to prevent multiple reconnection attempts
+  if (reconnectTimeoutId) {
+    clearTimeout(reconnectTimeoutId);
+    reconnectTimeoutId = null;
+  }
+
+  while (reconnectAttempts < maxReconnectAttempts) {
+    try {
+      reconnectAttempts++;
+      console.log(`🔄 Reconnection attempt ${reconnectAttempts}/${maxReconnectAttempts}...`);
+
+      // End the current pool
+      await pool[0].end();
+
+      // Create a new pool with direct connection configuration
+      const newDbConfig = getDbConfig();
+      pool[0] = new Pool(newDbConfig);
+
+      // Setup event listeners for the new pool
+      setupPoolEventListeners();
+
+      // Test the connection
+      const client = await pool[0].connect();
+      await client.query('SELECT NOW()');
+      client.release();
+
+      console.log('✅ Database reconnection successful (direct connection)');
+      reconnectAttempts = 0;
+      isReconnecting = false;
+      (global as any).dbConnectionFailed = false;
+      return;
+    } catch (error) {
+      console.error(`❌ Reconnection attempt ${reconnectAttempts} failed:`,
+        error instanceof Error ? error.message : String(error));
+
+      if (reconnectAttempts < maxReconnectAttempts) {
+        console.log(`⏳ Waiting ${reconnectDelay}ms before next attempt...`);
+        await new Promise(resolve => setTimeout(resolve, reconnectDelay));
+      }
+    }
+  }
+
+  console.error('❌ Max reconnection attempts reached. Database connection failed.');
+  isReconnecting = false;
+  (global as any).dbConnectionFailed = true;
+}
+
+// Setup pool event listeners
+function setupPoolEventListeners() {
+  // Remove existing listeners to prevent duplication
+  pool[0].removeAllListeners('connect');
+  pool[0].removeAllListeners('error');
+  pool[0].removeAllListeners('remove');
+  pool[0].removeAllListeners('acquire');
+
+  pool[0].on('connect', (client) => {
+    console.log('New client connected to PostgreSQL database');
+  });
+
+  pool[0].on('error', (err, client) => {
+    console.error('PostgreSQL pool error:', err);
+
+    // Don't reconnect for certain types of errors
+    const errorCode = (err as any).code;
+    if (errorCode === 'ECONNREFUSED' ||
+        errorCode === 'ENOTFOUND' ||
+        err.message.includes('Connection terminated') ||
+        err.message.includes('server closed the connection unexpectedly')) {
+      console.log('🔄 Database connection lost. Initiating reconnection...');
+
+      // Clear any existing timeout to prevent multiple reconnection attempts
+      if (reconnectTimeoutId) {
+        clearTimeout(reconnectTimeoutId);
+      }
+
+      reconnectTimeoutId = setTimeout(() => reconnectDatabase(), 1000);
+    }
+  });
+
+  pool[0].on('remove', (client) => {
+    console.log('Client removed from pool');
+  });
+
+  let connectionCount = 0;
+  pool[0].on('acquire', (client) => {
+    connectionCount++;
+    // Only log every 5th acquisition to reduce noise
+    if (connectionCount % 5 === 0) {
+      console.log(`Connection pool: ${connectionCount} connections acquired`);
+    }
+  });
+}
+
+// Test database connection immediately
+async function testConnection() {
+  if (isTestEnvironment) return;
+
+  try {
+    console.log('Testing database connection...');
+    const client = await pool[0].connect();
+    const result = await client.query('SELECT NOW()');
+    client.release();
+    console.log('✅ Database connection successful');
+    console.log('Current time from database:', result.rows[0].now);
+    (global as any).dbConnectionFailed = false;
+  } catch (error) {
+    console.error('❌ Database connection failed:', error);
+    console.error('Please check:');
+    console.error('1. PostgreSQL is running');
+    console.error('2. Database exists');
+    console.error('3. User has access');
+    console.error('4. Network connectivity to the database host');
+    console.error('5. Firewall settings allowing connections');
+
+    // Set a flag to indicate database is not available
+    (global as any).dbConnectionFailed = true;
+
+    // Start reconnection process
+    console.log('🔄 Starting automatic reconnection process...');
+
+    // Clear any existing timeout to prevent multiple reconnection attempts
+    if (reconnectTimeoutId) {
+      clearTimeout(reconnectTimeoutId);
+    }
+
+    reconnectTimeoutId = setTimeout(() => reconnectDatabase(), 2000);
+  }
+}
+
+// 연결 테스트 (테스트 환경이 아닌 경우에만)
+if (!isTestEnvironment) {
+  setupPoolEventListeners();
+  // Test connection on startup
+  testConnection();
+}
+
+// Graceful shutdown handler
+process.on('SIGINT', async () => {
+  console.log('🔄 Shutting down gracefully...');
+  try {
+    await pool[0].end();
+    console.log('✅ Database pool closed');
+  } catch (error) {
+    console.error('❌ Error closing database pool:', error);
+  }
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  console.log('🔄 Shutting down gracefully...');
+  try {
+    await pool[0].end();
+    console.log('✅ Database pool closed');
+  } catch (error) {
+    console.error('❌ Error closing database pool:', error);
+  }
+  process.exit(0);
+});
+
+// Export a function to get current pool instance
+export function getPool() {
+  return pool[0];
+}
+
+// Get connection status information
+export function getConnectionStatus() {
+  return {
+    isReconnecting,
+    reconnectAttempts,
+    isDatabaseAvailable: isDatabaseAvailable(),
+    currentHost: process.env.DB_HOST,
+    currentPort: parseInt(process.env.DB_PORT || '5432')
+  };
+}
+
+// Check if database is available
+export function isDatabaseAvailable(): boolean {
+  return !(global as any).dbConnectionFailed;
+}
+
+// Robust query wrapper with automatic retry and timeout handling
+export async function queryWithRetry(text: string, params?: any[], retries = 3, timeoutMs = 30000): Promise<any> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      if (isDatabaseAvailable()) {
+        // Create a timeout promise
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Query timeout')), timeoutMs);
+        });
+
+        // Create the query promise
+        const queryPromise = pool[0].query(text, params);
+
+        // Race between query and timeout
+        const result = await Promise.race([queryPromise, timeoutPromise]);
+        return result;
+      } else {
+        throw new Error('Database is not available');
+      }
+    } catch (error) {
+      console.error(`❌ Query attempt ${attempt}/${retries} failed:`, error instanceof Error ? error.message : String(error));
+
+      if (attempt === retries) {
+        throw error; // Re-throw the error if all retries are exhausted
+      }
+
+      // Wait before retrying (exponential backoff)
+      const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+      console.log(`⏳ Waiting ${waitTime}ms before retry...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+  }
+}
+
+// Bulk insert with transaction, automatic retry and timeout handling
+export async function bulkInsertWithRetry(
+  text: string,
+  paramsArray: any[][],
+  retries = 3,
+  timeoutMs = 60000
+): Promise<any> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    const client = await pool[0].connect();
+    try {
+      if (!isDatabaseAvailable()) {
+        throw new Error('Database is not available');
+      }
+
+      // Create a timeout promise
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Bulk insert timeout')), timeoutMs);
+      });
+
+      // Create the bulk insert promise with transaction
+      const bulkInsertPromise = (async () => {
+        await client.query('BEGIN');
+
+        const results = [];
+        for (const params of paramsArray) {
+          const result = await client.query(text, params);
+          results.push(result);
+        }
+
+        await client.query('COMMIT');
+        return results;
+      })();
+
+      // Race between bulk insert and timeout
+      const results = await Promise.race([bulkInsertPromise, timeoutPromise]);
+      client.release();
+
+      console.log(`✅ Bulk insert successful: ${paramsArray.length} rows inserted`);
+      return results;
+
+    } catch (error) {
+      // Rollback on error
+      try {
+        await client.query('ROLLBACK');
+      } catch (rollbackError) {
+        console.error('❌ Rollback failed:', rollbackError instanceof Error ? rollbackError.message : String(rollbackError));
+      }
+      client.release();
+
+      console.error(`❌ Bulk insert attempt ${attempt}/${retries} failed:`,
+        error instanceof Error ? error.message : String(error));
+
+      if (attempt === retries) {
+        throw error; // Re-throw the error if all retries are exhausted
+      }
+
+      // Wait before retrying (exponential backoff)
+      const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+      console.log(`⏳ Waiting ${waitTime}ms before retry...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+  }
+}
+

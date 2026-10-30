@@ -1,0 +1,63 @@
+import {LSStockSDK} from '../src/sdk';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+import {queryWithRetry} from "./database";
+
+async function sleep(number: number) {
+    return new Promise(resolve => setTimeout(resolve, number));
+}
+
+(async () => {
+    console.log('Testing getIndStocks API...');
+
+    // @ts-ignore
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({path: resolve(__dirname, '../.env')});
+
+    try {
+        const sdk = await LSStockSDK.getInstance();
+            let cnt = 0;
+
+            for await (const data of sdk.api.getStockTopChange({
+                "gubun1": "0",
+                "gubun2": "0",
+                "gubun3": "0",
+                "jc_num": 0x01004280,
+                "sprice": 5000,
+                "eprice": 1000000,
+                "jc_num2":0x000000000FF,
+                "exchgubun": "K",
+                "idx":  0,
+            })) {
+                console.log(cnt++, data);
+
+                await queryWithRetry(`
+                insert into stock_rank ("date", rank_type, shcode, hname, price, 
+                                        sign, change, diff, volume,open_price,                                        
+                high_price, low_price , jnildiff, updaycnt,
+                                        offerrem1, bidrem1, voldiff)
+                values (
+               to_char(now(),'YYYYMMDD'),$1, $2, $3, $4, $5,
+                $6, $7, $8, $9, $10,
+                $11, $12, $13, $14,
+                $15, $16
+               )`,[
+                     'top_diff', data.shcode, data.hname, data.price,
+                    data.sign, data.change, data.diff, data.volume, data.open_price,
+                    data.high_price, data.low_price, data.jnildiff, data.updaycnt,
+                    data.offerrem1, data.bidrem1, data.voldiff
+                ]);
+
+
+            }
+
+
+    } catch (sdkError) {
+        console.error('❌ Error initializing SDK:', sdkError);
+    }
+
+    // console.log('🏁 getIndStocks test completed');
+})();

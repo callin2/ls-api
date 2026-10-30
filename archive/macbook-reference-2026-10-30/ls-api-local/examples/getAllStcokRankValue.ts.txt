@@ -1,0 +1,57 @@
+import {LSStockSDK} from '../src';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+import {queryWithRetry} from "./database";
+
+async function sleep(number: number) {
+    return new Promise(resolve => setTimeout(resolve, number));
+}
+
+(async () => {
+    console.log('Testing getIndStocks API...');
+
+    // @ts-ignore
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({path: resolve(__dirname, '../.env')});
+
+    try {
+        const sdk = await LSStockSDK.getInstance();
+            let cnt = 0;
+
+            for await (const data of sdk.api.getTopValue({
+                "gubun": "0",
+                "jnilgubun": "0",
+                "jc_num": 128 + 512+16384+ 16777216,
+                "sprice": 3000,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0,
+                "jc_num2": 0xFF
+            })) {
+                console.log(cnt++, data);
+
+
+                await queryWithRetry(`
+                insert into stock_rank ("date", rank_type, shcode, hname, price, 
+                                        sign, change, diff, volume)
+                values (
+                           to_char(now(),'YYYYMMDD'), $1, $2, $3, $4, $5,
+                $6, $7, $8
+               )`,[
+                    'top_volume', data.shcode, data.hname, data.price,
+                    data.sign, data.change, data.diff, data.volume,
+                ]);
+
+
+            }
+
+
+    } catch (sdkError) {
+        console.error('❌ Error initializing SDK:', sdkError);
+    }
+
+    // console.log('🏁 getIndStocks test completed');
+})();

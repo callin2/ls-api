@@ -1,0 +1,40 @@
+import {LSStockSDK} from '../src/sdk';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+
+async function sleep(number: number) {
+    return new Promise(resolve => setTimeout(resolve, number));
+}
+
+(async () => {
+    console.log('Testing getStockTopChange API...');
+
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({ path: resolve(__dirname, '../.env') });
+
+    const sdk = await LSStockSDK.getInstance();
+
+    try {
+
+        if (sdk.api.getSavedFilters) {
+
+            for await (const data of sdk.api.getSavedFilters({
+                "user_id" : "callin",
+                "gb" : "0",
+                "group_name" : "",
+                "cont" : "",
+                "cont_key" : ""
+            })) {
+                console.log(data);
+            }
+        }
+
+    } catch (sdkError) {
+        console.error('❌ Error initializing SDK:', sdkError);
+    }
+
+    // console.log('🏁 getIndStocks test completed');
+})();

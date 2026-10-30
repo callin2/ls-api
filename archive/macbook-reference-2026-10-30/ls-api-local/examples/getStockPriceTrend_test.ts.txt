@@ -1,0 +1,43 @@
+import {LSStockSDK} from '../src';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+
+(async () => {
+
+
+    console.log('Testing getIndStocks API...');
+
+    // @ts-ignore
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({ path: resolve(__dirname, '../.env') });
+
+    let sdk = await LSStockSDK.getInstance();
+
+
+    let arr = []
+
+    for await (const data2 of sdk.api.getStockPriceTrend({
+        "shcode": "001200",
+        "dwmcode": 1,
+        "date": "20231010",
+        "idx": 0,
+        "cnt": 500,
+        "qrycnt": 10000,
+        "exchgubun" : "K"
+    })) {
+        // console.log(data2);
+        arr.push(data2);
+    }
+
+    arr.sort((a, b) => a.cvolume - b.cvolume);
+
+    console.log('---- Sorted by cvolume ----');
+    for (const item of arr) {
+        console.log(item);
+    }
+
+
+})();

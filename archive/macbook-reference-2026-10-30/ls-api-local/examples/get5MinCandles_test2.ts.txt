@@ -1,0 +1,58 @@
+import {LSStockSDK} from '../src';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+import {queryWithRetry, bulkInsertWithRetry} from "./database";
+import {candleToHangul, formatHangulByDate} from "../scripts/candle2hangul";
+
+(async () => {
+
+
+    console.log('Testing getIntegratedStockMinChart API...');
+
+    // @ts-ignore
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({path: resolve(__dirname, '../.env')});
+
+    let sdk = await LSStockSDK.getInstance();
+
+    let candles = []
+    let cnt = 0;
+    for await (const data2 of sdk.api.getIntegratedStockMinChart({
+        "shcode": '101170',
+        "ncnt": 5,
+        "qrycnt": 500,
+        "nday": "0",
+        "sdate": "",
+        "stime": "",
+        "edate": "20251205",
+        "etime": "",
+        "cts_date": "",
+        "cts_time": "",
+        "comp_yn": "N",
+        "exchgubun": "K"
+    })) {
+        candles.push(data2);
+        // console.log(data2);
+    }
+
+
+
+    console.log('\n=== 날짜별 줄바꿈 적용 ===');
+    candles = candles.sort((a, b) => {
+        const dateA = a.date + a.time;
+        const dateB = b.date + b.time;
+        return dateA.localeCompare(dateB);
+    })
+
+    const result = candleToHangul(candles);
+    const formattedByDate = formatHangulByDate(result);
+    console.log(formattedByDate);
+
+
+})();
+
+
+

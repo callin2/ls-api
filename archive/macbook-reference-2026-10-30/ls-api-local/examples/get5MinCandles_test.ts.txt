@@ -1,0 +1,109 @@
+import {LSStockSDK} from '../src/sdk';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+import {queryWithRetry, bulkInsertWithRetry} from "./database";
+
+(async () => {
+
+
+    console.log('Testing getIntegratedStockMinChart API...');
+
+    // @ts-ignore
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({ path: resolve(__dirname, '../.env') });
+
+    let sdk = await LSStockSDK.getInstance();
+
+    const targets = await queryWithRetry(`
+        select * 
+        from 
+             sync_progress 
+        where task_name ='5min_data_sync'
+        and is_finished = false
+        
+        `);
+
+    // travers array of rows
+    let row;
+    for( row of targets.rows) {
+        console.log(row)
+
+        let candles = []
+
+
+
+        for await (const data2 of sdk.api.getIntegratedStockMinChart({
+            "shcode": row.shcode,
+            "ncnt": 5,
+            "qrycnt": 500,
+            "nday": "0",
+            "sdate": "",
+            "stime": "",
+            "edate": row.date,
+            "etime": "",
+            "cts_date": "",
+            "cts_time": "",
+            "comp_yn": "N",
+            "exchgubun": "K"
+        })) {
+            candles.push(data2);
+            // console.log(data2);
+        }
+
+        // Bulk insert all candles at once in a single transaction
+        if (candles.length > 0) {
+            console.log(`Inserting ${candles.length} candles for ${row.shcode}...`);
+
+            const insertQuery = `
+                insert into stock_price_5min_data 
+                (shcode, date, chetime, open, high, low, close, jdiff_vol, value, jongchk, rate, sign)
+                values 
+                ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                on conflict (shcode, date, chetime) do nothing 
+                
+            `;
+
+            // Prepare params array for bulk insert
+            const paramsArray = candles.map(candle => [
+                row.shcode,
+                candle.date,
+                candle.time,        // maps to chetime
+                candle.open,
+                candle.high,
+                candle.low,
+                candle.close,
+                candle.jdiff_vol,      // maps to jdiff_vol
+                candle.value,
+                candle.jongchk || null,
+                candle.rate || null,
+                candle.sign || null
+            ]);
+
+            await bulkInsertWithRetry(insertQuery, paramsArray);
+            console.log(`✅ Successfully inserted ${candles.length} candles for ${row.shcode}`);
+        } else {
+            console.log(`No candles found for ${row.shcode} on ${row.date}`);
+        }
+
+        // Mark this task as finished
+        await queryWithRetry(`
+            UPDATE sync_progress 
+            SET is_finished = true
+            WHERE task_name = '5min_data_sync' 
+            AND shcode = $1 
+            AND date = $2
+        `, [row.shcode, row.date]);
+
+        console.log(`✅ Marked ${row.shcode} on ${row.date} as finished\n`);
+    }
+
+
+
+
+
+
+
+})();

@@ -1,0 +1,341 @@
+import {LSStockSDK} from '../src';
+import {queryWithRetry} from "./database"
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+
+(async () => {
+    console.log('Testing getAllThemes API...');
+
+    // @ts-ignore
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({path: resolve(__dirname, '../.env')});
+
+    try {
+        const sdk = await LSStockSDK.getInstance();
+        console.log('✅ SDK initialized successfully');
+
+        // Test getAllThemes function availability
+        if (sdk.api.getAllThemes) {
+            console.log('✅ getAllThemes function is available');
+
+            // Test getAllThemes API call
+            try {
+                console.log('📡 Calling getAllThemes API...');
+
+                let resultCount = 0;
+                await queryWithRetry(`delete
+                                      from stock_theme`);
+
+                for await (const data of sdk.api.getAllThemes({
+                    dummy: ""
+                })) {
+                    resultCount++;
+                    console.log(`📊 Result ${resultCount}:`, data);
+
+                    await queryWithRetry('insert into stock_theme (tm_name, tm_code) values ( $1, $2)', [data.tmname, data.tmcode]);
+
+
+                    /**
+                     real output data.
+
+                     📊 Result 1: { tmname: '화폐/금융자동화기기(디지털화폐 등)', tmcode: '0008' }
+                     📊 Result 2: { tmname: 'OLED(유기 발광 다이오드)', tmcode: '0009' }
+                     📊 Result 3: { tmname: '반도체 장비', tmcode: '0012' }
+                     📊 Result 4: { tmname: '리모델링/인테리어', tmcode: '0013' }
+                     📊 Result 5: { tmname: '반도체 재료/부품', tmcode: '0014' }
+                     📊 Result 6: { tmname: '구제역/광우병 수혜', tmcode: '0016' }
+                     📊 Result 7: { tmname: 'SI(시스템통합)', tmcode: '0017' }
+                     📊 Result 8: { tmname: '전자파', tmcode: '0018' }
+                     📊 Result 9: { tmname: '황사/미세먼지', tmcode: '0019' }
+                     📊 Result 10: { tmname: '자동차부품', tmcode: '0027' }
+                     📊 Result 11: { tmname: 'CCTV＆DVR', tmcode: '0028' }
+                     📊 Result 12: { tmname: '조선', tmcode: '0030' }
+                     📊 Result 13: { tmname: '환율하락 수혜', tmcode: '0031' }
+                     📊 Result 14: { tmname: '패션/의류', tmcode: '0032' }
+                     📊 Result 15: { tmname: 'LED', tmcode: '0033' }
+                     📊 Result 16: { tmname: '해운', tmcode: '0036' }
+                     📊 Result 17: { tmname: '홈쇼핑', tmcode: '0038' }
+                     📊 Result 18: { tmname: '휴대폰부품', tmcode: '0040' }
+                     📊 Result 19: { tmname: '카메라모듈/부품', tmcode: '0041' }
+                     📊 Result 20: { tmname: '게임', tmcode: '0042' }
+                     📊 Result 21: { tmname: '시멘트/레미콘', tmcode: '0044' }
+                     📊 Result 22: { tmname: '캐릭터상품', tmcode: '0045' }
+                     📊 Result 23: { tmname: '카지노', tmcode: '0047' }
+                     📊 Result 24: { tmname: '영화', tmcode: '0048' }
+                     📊 Result 25: { tmname: '인터넷 대표주', tmcode: '0049' }
+                     📊 Result 26: { tmname: '교육/온라인 교육', tmcode: '0052' }
+                     📊 Result 27: { tmname: '보안주(정보)', tmcode: '0055' }
+                     📊 Result 28: { tmname: 'NI(네트워크통합)', tmcode: '0056' }
+                     📊 Result 29: { tmname: '광고', tmcode: '0059' }
+                     📊 Result 30: { tmname: '육계', tmcode: '0060' }
+                     📊 Result 31: { tmname: '철강 주요종목', tmcode: '0062' }
+                     📊 Result 32: { tmname: '제지', tmcode: '0063' }
+                     📊 Result 33: { tmname: '2차전지', tmcode: '0064' }
+                     📊 Result 34: { tmname: '줄기세포', tmcode: '0066' }
+                     📊 Result 35: { tmname: '철강 중소형', tmcode: '0072' }
+                     📊 Result 36: { tmname: '여름', tmcode: '0076' }
+                     📊 Result 37: { tmname: '자원개발', tmcode: '0079' }
+                     📊 Result 38: { tmname: '태풍 및 장마', tmcode: '0082' }
+                     📊 Result 39: { tmname: '주류업(주정, 에탄올 등)', tmcode: '0086' }
+                     📊 Result 40: { tmname: '수산', tmcode: '0090' }
+                     📊 Result 41: { tmname: '통신장비', tmcode: '0092' }
+                     📊 Result 42: { tmname: '조선기자재', tmcode: '0094' }
+                     📊 Result 43: { tmname: 'RFID(NFC 등)', tmcode: '0097' }
+                     📊 Result 44: { tmname: '음원/음반', tmcode: '0098' }
+                     📊 Result 45: { tmname: '지능형로봇/인공지능(AI)', tmcode: '0099' }
+                     📊 Result 46: { tmname: '스마트홈(홈네트워크)', tmcode: '0104' }
+                     📊 Result 47: { tmname: '사료', tmcode: '0105' }
+                     📊 Result 48: { tmname: '바이오인식(생체인식)', tmcode: '0106' }
+                     📊 Result 49: { tmname: '백신/진단시약/방역(신종플루, AI 등)', tmcode: '0108' }
+                     📊 Result 50: { tmname: '화장품', tmcode: '0110' }
+                     📊 Result 51: { tmname: '지주사', tmcode: '0111' }
+                     📊 Result 52: { tmname: '공기청정기', tmcode: '0112' }
+                     📊 Result 53: { tmname: '음식료업종', tmcode: '0113' }
+                     📊 Result 54: { tmname: '창투사', tmcode: '0119' }
+                     📊 Result 55: { tmname: '남북경협', tmcode: '0121' }
+                     📊 Result 56: { tmname: '전력설비', tmcode: '0123' }
+                     📊 Result 57: { tmname: '제대혈', tmcode: '0124' }
+                     📊 Result 58: { tmname: '통신', tmcode: '0126' }
+                     📊 Result 59: { tmname: '영상콘텐츠', tmcode: '0127' }
+                     📊 Result 60: { tmname: '엔터테인먼트', tmcode: '0128' }
+                     📊 Result 61: { tmname: '소매유통', tmcode: '0136' }
+                     📊 Result 62: { tmname: '출산장려정책', tmcode: '0139' }
+                     📊 Result 63: { tmname: '종합 물류', tmcode: '0141' }
+                     📊 Result 64: { tmname: '방위산업/전쟁 및 테러', tmcode: '0144' }
+                     📊 Result 65: { tmname: '여행', tmcode: '0147' }
+                     📊 Result 66: { tmname: '원격진료/비대면진료(U-Healthcare)', tmcode: '0149' }
+                     📊 Result 67: { tmname: '증권', tmcode: '0151' }
+                     📊 Result 68: { tmname: '온실가스(탄소배출권)/탄소 포집·활용', tmcode: '0152' }
+                     📊 Result 69: { tmname: '건설 대표주', tmcode: '0154' }
+                     📊 Result 70: { tmname: '반도체 대표주(생산)', tmcode: '0155' }
+                     📊 Result 71: { tmname: '자동차 대표주', tmcode: '0159' }
+                     📊 Result 72: { tmname: '손해보험', tmcode: '0164' }
+                     📊 Result 73: { tmname: '은행', tmcode: '0165' }
+                     📊 Result 74: { tmname: '항공/저가 항공사(LCC)', tmcode: '0166' }
+                     📊 Result 75: { tmname: '타이어', tmcode: '0167' }
+                     📊 Result 76: { tmname: '골판지 제조', tmcode: '0170' }
+                     📊 Result 77: { tmname: '비철금속', tmcode: '0171' }
+                     📊 Result 78: { tmname: '제약업체', tmcode: '0172' }
+                     📊 Result 79: { tmname: 'IT 대표주', tmcode: '0173' }
+                     📊 Result 80: { tmname: '치아 치료(임플란트 등)', tmcode: '0174' }
+                     📊 Result 81: { tmname: '의료기기', tmcode: '0175' }
+                     📊 Result 82: { tmname: '도시가스', tmcode: '0176' }
+                     📊 Result 83: { tmname: 'LPG(액화석유가스)', tmcode: '0177' }
+                     📊 Result 84: { tmname: '전선', tmcode: '0178' }
+                     📊 Result 85: { tmname: '석유화학', tmcode: '0180' }
+                     📊 Result 86: { tmname: '테마파크', tmcode: '0181' }
+                     📊 Result 87: { tmname: '수자원(양적/질적 개선)', tmcode: '0184' }
+                     📊 Result 88: { tmname: '정유', tmcode: '0185' }
+                     📊 Result 89: { tmname: '핵융합에너지', tmcode: '0187' }
+                     📊 Result 90: { tmname: '풍력에너지', tmcode: '0188' }
+                     📊 Result 91: { tmname: '태양광에너지', tmcode: '0191' }
+                     📊 Result 92: { tmname: '폐기물처리', tmcode: '0197' }
+                     📊 Result 93: { tmname: '우주항공산업(누리호/인공위성 등)', tmcode: '0200' }
+                     📊 Result 94: { tmname: '비료', tmcode: '0204' }
+                     📊 Result 95: { tmname: '원자력발전', tmcode: '0205' }
+                     📊 Result 96: { tmname: '농업', tmcode: '0206' }
+                     📊 Result 97: { tmname: '터치패널(스마트폰/태블릿PC 등)', tmcode: '0209' }
+                     📊 Result 98: { tmname: '자전거', tmcode: '0210' }
+                     📊 Result 99: { tmname: '해저터널(지하화/지하도로 등)', tmcode: '0213' }
+                     📊 Result 100: { tmname: '강관업체(Steel pipe)', tmcode: '0223' }
+                     📊 Result 101: { tmname: '전기차', tmcode: '0227' }
+                     📊 Result 102: { tmname: '국내 상장 중국기업', tmcode: '0228' }
+                     📊 Result 103: { tmname: '스마트그리드(지능형전력망)', tmcode: '0229' }
+                     📊 Result 104: { tmname: '미디어(방송/신문)', tmcode: '0232' }
+                     📊 Result 105: { tmname: '보안주(물리)', tmcode: '0234' }
+                     📊 Result 106: { tmname: 'GTX(수도권 광역급행철도)', tmcode: '0237' }
+                     📊 Result 107: { tmname: '바이오시밀러(복제 바이오의약품)', tmcode: '0241' }
+                     📊 Result 108: { tmname: '탄소나노튜브(CNT)', tmcode: '0242' }
+                     📊 Result 109: { tmname: '철도', tmcode: '0250' }
+                     📊 Result 110: { tmname: '모바일게임(스마트폰)', tmcode: '0265' }
+                     📊 Result 111: { tmname: '겨울', tmcode: '0266' }
+                     📊 Result 112: { tmname: '전기자전거', tmcode: '0268' }
+                     📊 Result 113: { tmname: 'LED장비', tmcode: '0269' }
+                     📊 Result 114: { tmname: '모바일콘텐츠(스마트폰/태블릿PC)', tmcode: '0270' }
+                     📊 Result 115: { tmname: '전자결제(전자화폐)', tmcode: '0272' }
+                     📊 Result 116: { tmname: '클라우드 컴퓨팅', tmcode: '0276' }
+                     📊 Result 117: { tmname: '스마트폰', tmcode: '0279' }
+                     📊 Result 118: { tmname: '생명보험', tmcode: '0283' }
+                     📊 Result 119: { tmname: '기업인수목적회사(SPAC)', tmcode: '0284' }
+                     📊 Result 120: { tmname: '마스크', tmcode: '0285' }
+                     📊 Result 121: { tmname: 'PCB(FPCB 등)', tmcode: '0287' }
+                     📊 Result 122: { tmname: '모바일솔루션(스마트폰)', tmcode: '0288' }
+                     📊 Result 123: { tmname: '증강현실(AR)', tmcode: '0289' }
+                     📊 Result 124: { tmname: '스포츠행사 수혜(올림픽, 월드컵 등)', tmcode: '0290' }
+                     📊 Result 125: { tmname: '슈퍼박테리아', tmcode: '0294' }
+                     📊 Result 126: { tmname: '공작기계', tmcode: '0297' }
+                     📊 Result 127: { tmname: '희귀금속(희토류 등)', tmcode: '0298' }
+                     📊 Result 128: { tmname: '음성인식', tmcode: '0302' }
+                     📊 Result 129: { tmname: '시스템반도체', tmcode: '0307' }
+                     📊 Result 130: { tmname: '리츠(REITs)', tmcode: '0310' }
+                     📊 Result 131: { tmname: '고령화 사회(노인복지)', tmcode: '0311' }
+                     📊 Result 132: { tmname: '남-북-러 가스관사업', tmcode: '0313' }
+                     📊 Result 133: { tmname: '엔젤산업', tmcode: '0316' }
+                     📊 Result 134: { tmname: 'SNS(소셜네트워크서비스)', tmcode: '0317' }
+                     📊 Result 135: { tmname: '백화점', tmcode: '0318' }
+                     📊 Result 136: { tmname: '화학섬유', tmcode: '0319' }
+                     📊 Result 137: { tmname: '무선충전기술', tmcode: '0321' }
+                     📊 Result 138: { tmname: '건설 중소형', tmcode: '0322' }
+                     📊 Result 139: { tmname: '셰일가스(Shale Gas)', tmcode: '0323' }
+                     📊 Result 140: { tmname: '일자리(취업)', tmcode: '0324' }
+                     📊 Result 141: { tmname: '종합상사', tmcode: '0325' }
+                     📊 Result 142: { tmname: '3D 프린터', tmcode: '0326' }
+                     📊 Result 143: { tmname: '제습기', tmcode: '0328' }
+                     📊 Result 144: { tmname: '전력저장장치(ESS)', tmcode: '0329' }
+                     📊 Result 145: { tmname: '페인트', tmcode: '0330' }
+                     📊 Result 146: { tmname: '가상화폐(비트코인 등)', tmcode: '0331' }
+                     📊 Result 147: { tmname: '스마트카(SMART CAR)', tmcode: '0332' }
+                     📊 Result 148: { tmname: '사물인터넷', tmcode: '0334' }
+                     📊 Result 149: { tmname: '재난/안전(지진/화재 등)', tmcode: '0335' }
+                     📊 Result 150: { tmname: '밥솥', tmcode: '0341' }
+                     📊 Result 151: { tmname: '핀테크(FinTech)', tmcode: '0342' }
+                     📊 Result 152: { tmname: '인터넷은행', tmcode: '0343' }
+                     📊 Result 153: { tmname: '메르스 코로나 바이러스', tmcode: '0346' }
+                     📊 Result 154: { tmname: '삼성페이', tmcode: '0348' }
+                     📊 Result 155: { tmname: '드론(Drone)', tmcode: '0349' }
+                     📊 Result 156: { tmname: '가상현실(VR)', tmcode: '0352' }
+                     📊 Result 157: { tmname: '자율주행차', tmcode: '0362' }
+                     📊 Result 158: { tmname: '3D 낸드(NAND)', tmcode: '0370' }
+                     📊 Result 159: { tmname: '5G(5세대 이동통신)', tmcode: '0373' }
+                     📊 Result 160: { tmname: '4대강 복원', tmcode: '0374' }
+                     📊 Result 161: { tmname: '4차산업 수혜주', tmcode: '0375' }
+                     📊 Result 162: { tmname: '유전자 치료제/분석', tmcode: '0376' }
+                     📊 Result 163: { tmname: '치매', tmcode: '0377' }
+                     📊 Result 164: { tmname: '건설기계', tmcode: '0378' }
+                     📊 Result 165: { tmname: '항공기부품', tmcode: '0379' }
+                     📊 Result 166: { tmname: '면세점', tmcode: '0380' }
+                     📊 Result 167: { tmname: 'LNG(액화천연가스)', tmcode: '0381' }
+                     📊 Result 168: { tmname: '플렉서블 디스플레이', tmcode: '0382' }
+                     📊 Result 169: { tmname: '편의점', tmcode: '0384' }
+                     📊 Result 170: { tmname: '키오스크(KIOSK)', tmcode: '0385' }
+                     📊 Result 171: { tmname: '수소차(연료전지/부품/충전소 등)', tmcode: '0386' }
+                     📊 Result 172: { tmname: '블록체인', tmcode: '0387' }
+                     📊 Result 173: { tmname: '아이폰', tmcode: '0388' }
+                     📊 Result 174: { tmname: '면역항암제', tmcode: '0389' }
+                     📊 Result 175: { tmname: '마이크로 LED', tmcode: '0390' }
+                     📊 Result 176: { tmname: '스마트팩토리(스마트공장)', tmcode: '0392' }
+                     📊 Result 177: { tmname: '갤럭시 부품주', tmcode: '0393' }
+                     📊 Result 178: { tmname: '보톡스(보툴리눔톡신)', tmcode: '0397' }
+                     📊 Result 179: { tmname: 'DMZ 평화공원', tmcode: '0398' }
+                     📊 Result 180: { tmname: '조림사업', tmcode: '0400' }
+                     📊 Result 181: { tmname: '원자력발전소 해체', tmcode: '0401' }
+                     📊 Result 182: { tmname: '아스콘(아스팔트 콘크리트)', tmcode: '0402' }
+                     📊 Result 183: { tmname: '폴더블폰', tmcode: '0404' }
+                     📊 Result 184: { tmname: 'MLCC(적층세라믹콘덴서)', tmcode: '0405' }
+                     📊 Result 185: { tmname: '마리화나(대마)', tmcode: '0408' }
+                     📊 Result 186: { tmname: '그래핀', tmcode: '0415' }
+                     📊 Result 187: { tmname: '아프리카 돼지열병(ASF)', tmcode: '0417' }
+                     📊 Result 188: { tmname: '日제품 불매운동(수혜)', tmcode: '0421' }
+                     📊 Result 189: { tmname: '日 수출 규제(국산화 등)', tmcode: '0422' }
+                     📊 Result 190: { tmname: '양자암호/양자컴퓨팅', tmcode: '0426' }
+                     📊 Result 191: { tmname: '구충제(펜벤다졸, 이버멕틴 등)', tmcode: '0427' }
+                     📊 Result 192: { tmname: '재택근무/스마트워크', tmcode: '0435' }
+                     📊 Result 193: { tmname: '코로나19(진단/치료제/백신 개발 등)', tmcode: '0436' }
+                     📊 Result 194: { tmname: '2차전지(장비)', tmcode: '0445' }
+                     📊 Result 195: { tmname: '2차전지(소재/부품)', tmcode: '0446' }
+                     📊 Result 196: { tmname: '코로나19(진단키트)', tmcode: '0447' }
+                     📊 Result 197: { tmname: '코로나19(치료제/백신 개발 등)', tmcode: '0448' }
+                     📊 Result 198: { tmname: '2차전지(생산)', tmcode: '0449' }
+                     📊 Result 199: { tmname: '코로나19(음압병실/음압구급차)', tmcode: '0452' }
+                     📊 Result 200: { tmname: 'UAM(도심항공모빌리티)', tmcode: '0462' }
+                     📊 Result 201: { tmname: '콜드체인(저온 유통)', tmcode: '0464' }
+                     📊 Result 202: { tmname: '모더나(MODERNA)', tmcode: '0467' }
+                     📊 Result 203: { tmname: '화이자(PFIZER)', tmcode: '0468' }
+                     📊 Result 204: { tmname: '마이크로바이옴', tmcode: '0470' }
+                     📊 Result 205: { tmname: '2차전지(전고체)', tmcode: '0472' }
+                     📊 Result 206: { tmname: '쿠팡(coupang)', tmcode: '0474' }
+                     📊 Result 207: { tmname: '메타버스(Metaverse)', tmcode: '0480' }
+                     📊 Result 208: { tmname: '마켓컬리(kurly)', tmcode: '0481' }
+                     📊 Result 209: { tmname: '두나무(Dunamu)', tmcode: '0482' }
+                     📊 Result 210: { tmname: '야놀자(Yanolja)', tmcode: '0483' }
+                     📊 Result 211: { tmname: '백신여권', tmcode: '0485' }
+                     📊 Result 212: { tmname: '건강기능식품', tmcode: '0487' }
+                     📊 Result 213: { tmname: '웹툰', tmcode: '0488' }
+                     📊 Result 214: { tmname: '카카오뱅크(kakao BANK)', tmcode: '0489' }
+                     📊 Result 215: { tmname: 'NFT(대체불가토큰)', tmcode: '0492' }
+                     📊 Result 216: { tmname: 'mRNA(메신저 리보핵산)', tmcode: '0493' }
+                     📊 Result 217: { tmname: '골프', tmcode: '0496' }
+                     📊 Result 218: { tmname: '토스(toss)', tmcode: '0497' }
+                     📊 Result 219: { tmname: '폐배터리', tmcode: '0500' }
+                     📊 Result 220: { tmname: '리비안(RIVIAN)', tmcode: '0501' }
+                     📊 Result 221: { tmname: '2차전지(LFP/리튬인산철)', tmcode: '0503' }
+                     📊 Result 222: { tmname: '요소수', tmcode: '0504' }
+                     📊 Result 223: { tmname: '로봇(산업용/협동로봇 등)', tmcode: '0505' }
+                     📊 Result 224: { tmname: '탈모 치료', tmcode: '0506' }
+                     📊 Result 225: { tmname: '마이데이터', tmcode: '0507' }
+                     📊 Result 226: { tmname: '니켈', tmcode: '0511' }
+                     📊 Result 227: { tmname: '미용기기', tmcode: '0513' }
+                     📊 Result 228: { tmname: '전기차(충전소/충전기)', tmcode: '0514' }
+                     📊 Result 229: { tmname: '엠폭스(원숭이두창)', tmcode: '0516' }
+                     📊 Result 230: { tmname: '우크라이나 재건', tmcode: '0517' }
+                     📊 Result 231: { tmname: '네옴시티', tmcode: '0519' }
+                     📊 Result 232: { tmname: '피팅(관이음쇠)/밸브', tmcode: '0520' }
+                     📊 Result 233: { tmname: '애플페이', tmcode: '0521' }
+                     📊 Result 234: { tmname: '리튬', tmcode: '0523' }
+                     📊 Result 235: { tmname: '모듈러주택', tmcode: '0524' }
+                     📊 Result 236: { tmname: '렌터카', tmcode: '0525' }
+                     📊 Result 237: { tmname: '윤활유', tmcode: '0527' }
+                     📊 Result 238: { tmname: 'AI 챗봇(챗GPT 등)', tmcode: '0529' }
+                     📊 Result 239: { tmname: 'STO(토큰증권 발행)', tmcode: '0531' }
+                     📊 Result 240: { tmname: '페라이트', tmcode: '0534' }
+                     📊 Result 241: { tmname: 'HBM(고대역폭메모리)', tmcode: '0536' }
+                     📊 Result 242: { tmname: '초전도체', tmcode: '0537' }
+                     📊 Result 243: { tmname: '맥신(MXene)', tmcode: '0539' }
+                     📊 Result 244: { tmname: '비만치료제', tmcode: '0540' }
+                     📊 Result 245: { tmname: '의료AI', tmcode: '0543' }
+                     📊 Result 246: { tmname: '온디바이스 AI', tmcode: '0545' }
+                     📊 Result 247: { tmname: '마이코플라스마 폐렴', tmcode: '0546' }
+                     📊 Result 248: { tmname: 'CXL(컴퓨트익스프레스링크)', tmcode: '0547' }
+                     📊 Result 249: { tmname: '뉴로모픽 반도체', tmcode: '0556' }
+                     📊 Result 250: { tmname: '유리 기판', tmcode: '0557' }
+                     📊 Result 251: { tmname: '고체산화물 연료전지(SOFC)', tmcode: '0559' }
+                     📊 Result 252: { tmname: '냉각시스템(액침냉각 등)', tmcode: '0560' }
+                     📊 Result 253: { tmname: '2024 하반기 신규상장', tmcode: '0562' }
+                     📊 Result 254: { tmname: '낙태/피임', tmcode: '0563' }
+                     📊 Result 255: { tmname: '전기차 화재 방지(배터리 열폭주 등)', tmcode: '0564' }
+                     📊 Result 256: { tmname: '딥페이크(deepfake)', tmcode: '0566' }
+                     📊 Result 257: { tmname: '밸류업(24년 기업가치 제고계획 발표)', tmcode: '0567' }
+                     📊 Result 258: { tmname: '코리아 밸류업 지수(Korea Value-up In', tmcode: '0568' }
+                     📊 Result 259: { tmname: '밸류업(25년 기업가치 제고계획 발표)', tmcode: '0571' }
+                     📊 Result 260: { tmname: '2025 상반기 신규상장', tmcode: '0574' }
+                     📊 Result 261: { tmname: '지역화폐', tmcode: '0575' }
+                     📊 Result 262: { tmname: '퓨리오사AI', tmcode: '0576' }
+                     📊 Result 263: { tmname: '2차전지(나트륨이온)', tmcode: '0579' }
+                     📊 Result 264: { tmname: '유심(USIM)', tmcode: '0580' }
+                     📊 Result 265: { tmname: '탈 플라스틱(친환경/생분해성 등)', tmcode: '0581' }
+                     📊 Result 266: { tmname: '스테이블코인', tmcode: '0582' }
+
+                     */
+
+
+                }
+
+                if (resultCount === 0) {
+                    console.log('⚠️  No results returned from getAllThemes API');
+                } else {
+                    console.log(`✅ getAllThemes API test completed successfully with ${resultCount} result(s)`);
+                }
+
+            } catch (apiError) {
+                console.error('❌ Error calling getAllThemes API:', apiError);
+
+                // Log additional error details if available
+                if (apiError instanceof Error) {
+                    console.error('   Error message:', apiError.message);
+                    console.error('   Error stack:', apiError.stack);
+                }
+            }
+
+        } else {
+            console.error('❌ getAllThemes function is not available in SDK');
+        }
+
+    } catch (sdkError) {
+        console.error('❌ Error initializing SDK:', sdkError);
+    }
+
+    console.log('🏁 getAllThemes test completed');
+})();

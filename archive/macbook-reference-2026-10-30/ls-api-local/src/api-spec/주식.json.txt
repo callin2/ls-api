@@ -1,0 +1,1540 @@
+{
+    "category": "주식",
+    "url_part": "stock",
+    "sub_categories": [
+      {
+        "sub_category": "order",
+        "name": "주문",
+        "url_part": "order",
+        "api_list": [
+          {
+            "label": "현물정정주문(CSPAT00701)",
+            "api_code": "CSPAT00701",
+            "func_name": "modifySpotOrder",
+            "url": "/stock/order",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "CSPAT00701",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "CSPAT00701InBlock1": {
+                "RecCnt": 1,
+                "OrgOrdNo": 84005,
+                "IsuNo": "A005930",
+                "OrdQty": 1,
+                "OrdprcPtnCode": "00",
+                "OrdCndiTpCode": "0",
+                "OrdPrc": 8350.0,
+                "CommdaCode": "41",
+                "StrtgCode": " ",
+                "GrpId": " ",
+                "OrdSeqNo": 0,
+                "PtflNo": 0,
+                "BskNo": 0,
+                "TrchNo": 0,
+                "ItemNo": 0
+              }
+            }
+          },
+          {
+            "label": "현물취소주문(CSPAT00801)",
+            "api_code": "CSPAT00801",
+            "func_name": "cancelSpotOrder",
+            "url": "/stock/order",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "CSPAT00801",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "CSPAT00801InBlock1": {
+                "RecCnt": 1,
+                "OrgOrdNo": 84005,
+                "IsuNo": "A005930",
+                "OrdQty": 1,
+                "CommdaCode": "41",
+                "GrpId": " ",
+                "StrtgCode": " ",
+                "OrdSeqNo": 0,
+                "PtflNo": 0,
+                "BskNo": 0,
+                "TrchNo": 0,
+                "ItemNo": 0
+              }
+            }
+          },
+          {
+            "label": "현물주문(CSPAT00601)",
+            "api_code": "CSPAT00601",
+            "func_name": "orderStock",
+            "url": "/stock/order",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "CSPAT00601",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "CSPAT00601InBlock1": {
+                "IsuNo": "<종목번호>",
+                "OrdQty": 0,
+                "OrdPrc": 0.0,
+                "BnsTpCode": "1",
+                "OrdprcPtnCode": "00",
+                "MgntrnCode": "000",
+                "LoanDt": "",
+                "OrdCndiTpCode": "0",
+                "MbrNo" : "KRX"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "sub_category": "order",
+        "name": "섹터",
+        "url_part": "sector",
+        "api_list": [
+          {
+            "label": "종목별테마조회(t1532)",
+            "api_code": "t1532",
+            "func_name": "getStockThemes",
+            "url": "/stock/sector",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1532",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1532InBlock": {
+                "shcode": "078020"
+              }
+            }
+          },
+          {
+            "label": "테마별종목조회(t1531)",
+            "api_code": "t1531",
+            "func_name": "getThemeRank",
+            "url": "/stock/sector",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1531",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1531InBlock": {
+                "tmname": "",
+                "tmcode": ""
+              }
+            }
+          },
+          {
+            "label": "전체테마조회(t8425)",
+            "api_code": "t8425",
+            "func_name": "getAllThemes",
+            "url": "/stock/sector",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t8425",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t8425InBlock": {
+                "dummy": ""
+              }
+            }
+          },
+          {
+            "label": "테마종목별시세조회(t1537)",
+            "api_code": "t1537",
+            "func_name": "getThemeQuotes",
+            "url": "/stock/sector",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1537",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1537InBlock": {
+                "tmcode": "0008"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "sub_category": "accno",
+        "name": "계좌",
+        "url_part": "accno",
+        "api_list": [
+          {
+            "label": "주식체결/미체결(t0425)",
+            "throttle": 1,
+            "api_code": "t0425",
+            "func_name": "getOrders",
+            "url": "/stock/accno",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t0425",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t0425InBlock": {
+                "expcode": "005930",
+                "chegb": "0",
+                "medosu": "0",
+                "sortgb": "2",
+                "cts_ordno": " "
+              }
+            }
+          },
+          {
+            "label": "계좌 거래내역(CDPCQ04700)",
+            "api_code": "CDPCQ04700",
+            "func_name": "getAccountTransactions",
+            "url": "/stock/accno",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "CDPCQ04700",
+              "tr_cont": "N",
+              "tr_cont_key": ""
+            },
+            "body": {
+              "CDPCQ04700InBlock1": {
+                "QryTp": "0",
+                "QrySrtDt": "20250101",
+                "QryEndDt": "20250131",
+                "SrtNo": 0,
+                "PdptnCode": "01",
+                "IsuLgclssCode": "00",
+                "IsuNo": ""
+              }
+            }
+          },
+          {
+            "label": "예상체결량상위조회(t1489)",
+            "throttle": 1,
+            "api_code": "t1489",
+            "func_name": "getTopExpectedVolume",
+            "url": "/stock/high-item",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1489",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1489InBlock": {
+                "gubun": "1",
+                "jgubun": "1",
+                "jongchk": "1",
+                "idx": 0,
+                "yesprice": 0,
+                "yeeprice": 0,
+                "yevolume": 0
+              }
+            }
+          },
+          {
+            "label": "전일동시간대비거래급증(t1466)",
+            "throttle": 1,
+            "api_code": "t1466",
+            "func_name": "getStockVolumeSpike",
+            "url": "/stock/high-item",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1466",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1466InBlock": {
+                "gubun": "1",
+                "type1": "1",
+                "type2": "1",
+                "jc_num": 0,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0,
+                "jc_num2": 0
+              }
+            }
+          },
+          {
+            "label": "거래대금상위(t1463)",
+            "throttle": 1,
+            "func_name": "getStockTopValue",
+            "api_code": "t1463",
+            "url": "/stock/high-item",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1463",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1463InBlock": {
+                "gubun": "1",
+                "jnilgubun": "1",
+                "jc_num": 0,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0,
+                "jc_num2": 0
+              }
+            }
+          },
+          {
+            "label": "거래량상위(t1452)",
+            "throttle": 2,
+            "api_code": "t1452",
+            "func_name": "getStockTopVolume",
+            "url": "/stock/high-item",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1452",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1452InBlock": {
+                "gubun": "0",
+                "jnilgubun": "1",
+                "sdiff": 0,
+                "ediff": 0,
+                "jc_num": 0,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0
+              }
+            }
+          },
+          {
+            "label": "등락율상위(t1441)",
+            "throttle": 1,
+            "api_code": "t1441",
+            "func_name": "getStockTopChange",
+            "url": "/stock/high-item",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1441",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1441InBlock": {
+                "gubun1": "1",
+                "gubun2": "1",
+                "gubun3": "1",
+                "jc_num": 0,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx":  0,
+                "jc_num2": 0
+              }
+            }
+          },
+          {
+            "label": "증시주변자금추이(t8428)",
+            "throttle": 1,
+            "api_code": "t8428",
+            "func_name": "getMarketFundsTrend",
+            "url": "/stock/investinfo",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t8428",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t8428InBlock": {
+                "fdate": "20250101",
+                "tdate": "20251231",
+                "gubun": "1",
+                "key_date": " ",
+                "upcode": "001",
+                "cnt": 100
+              }
+            }
+          },
+
+          {
+            "label": "시간외등락율상위(t1481)",
+            "throttle": 1,
+            "api_code": "t1481",
+            "func_name": "getExtendedTopChange",
+            "url": "/stock/high-item",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1481",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1481InBlock": {
+                "gubun1": "0",
+                "gubun2": "0",
+                "jongchk": "0",
+                "volume": "0",
+                "idx": 0
+              }
+            }
+          },
+          {
+            "label": "재무순위종합(t3341)",
+            "throttle": 1,
+            "api_code": "t3341",
+            "func_name": "getFinancialRanking",
+            "url": "/stock/investinfo",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t3341",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t3341InBlock": {
+                "gubun": "0",
+                "gubun1": "1",
+                "gubun2": "1",
+                "idx": 0
+              }
+            }
+          },
+
+          {
+            "label": "투자의견(t3401)",
+            "throttle": 1,
+            "api_code": "t3401",
+            "func_name": "getInvestmentOpinion",
+            "url": "/stock/investinfo",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t3401",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t3401InBlock": {
+                "shcode": "001200",
+                "gubun1": "0",
+                "tradno": "000",
+                "cts_date": ""
+              }
+            }
+          },
+
+          {
+            "label": "해외지수조회(t3521)",
+            "throttle": 1,
+            "api_code": "t3521",
+            "func_name": "getForeignIndex",
+            "url": "/stock/investinfo",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t3521",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t3521InBlock": {
+                "kind": "S",
+                "symbol": "DJI@DJI"
+              }
+            }
+          },
+
+          {
+            "label": "주식잔고2(t0424)",
+            "throttle": 1,
+            "api_code": "t0424",
+            "func_name": "getBalanceV2",
+            "url": "/stock/accno",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t0424",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t0424InBlock": {
+                "prcgb": "",
+                "chegb": "",
+                "dangb": "",
+                "charge": "",
+                "cts_expcode": ""
+              }
+            }
+          }
+
+        ]
+      },
+      {
+        "sub_category": "market_data",
+        "name": "시세",
+        "url_part" : "market_data",
+        "api_list": [
+          {
+            "label": "주식현재가호가조회(t1101)",
+            "throttle": 3,
+            "api_code": "t1101",
+            "func_name": "getOrderBook",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "tr_cd": "t1101",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1101InBlock": {
+                "shcode": "078020"
+              }
+            }
+          },
+          {
+            "label": "주식현재가호가조회2(t8450)",
+            "throttle": 3,
+            "api_code": "t8450",
+            "func_name": "getOrderBook2",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=UTF-8",
+              "tr_cd": "t8450",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t8450InBlock" : {
+                "shcode" : "010950",
+                "exchgubun" : "U"
+              }
+            }
+          },
+
+          {
+            "label": "기간별주가(t1305)",
+            "throttle": 1,
+            "api_code": "t1305",
+            "func_name": "getStockPriceTrend",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t1305",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1305InBlock": {
+                "shcode": "001200",
+                "dwmcode": 1,
+                "date": "",
+                "idx": 0,
+                "cnt": 1
+              }
+            }
+          },
+          {
+            "label": "가격대별매매비중조회(t1449)",
+            "api_code": "t1449",
+            "func_name": "getStockPriceRatio",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1449",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1449InBlock": {
+                "shcode": "001200",
+                "dategb": "1"
+              }
+            }
+          },
+          {
+            "label": "주식현재가(시세)조회(t1102)",
+            "throttle": 3,
+            "api_code": "t1102",
+            "func_name": "getStockPrice",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t1102",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1102InBlock": {
+                "shcode": "078020"
+              }
+            }
+          },
+          {
+            "label": "주식시간대별체결조회(t1301)",
+            "throttle": 3,
+            "api_code": "t1301",
+            "func_name": "getStockTimeIntervalTrade",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <access_token>",
+              "tr_cd": "t1301",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1301InBlock": {
+                "shcode": "005930",
+                "cvolume": 1000,
+                "starttime": "0900",
+                "endtime": "1500",
+                "cts_time": "0000000000"
+              }
+            }
+          },
+          {
+            "label": "주식분별주가조회(t1302)",
+            "throttle": 1,
+            "api_code": "t1302",
+            "func_name": "getStockPriceByMin",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t1302",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1302InBlock": {
+                "shcode": "001200",
+                "gubun": "0",
+                "time": "",
+                "cnt": 0,
+                "exchgubun": "U"
+              }
+            }
+          },
+          {
+              "label": "(통합)주식챠트(N분) API용(t8452)",
+              "throttle": 1,
+              "api_code": "t8452",
+              "func_name": "getIntegratedStockMinChart",
+              "url": "/stock/chart",
+              "method": "POST",
+              "headers": {
+                  "content-type": "application/json; charset=utf-8",
+                  "authorization": "Bearer <ACCESS_TOKEN>",
+                  "tr_cd": "t8452",
+                  "tr_cont": "N",
+                  "tr_cont_key": "0",
+                  "mac_address": "<MAC_ADDRESS>"
+              },
+              "body": {
+                  "t8452InBlock": {
+                      "shcode": "010950",
+                      "ncnt": 1,
+                      "qrycnt": 10,
+                      "nday": "0",
+                      "sdate": "",
+                      "stime": "",
+                      "edate": "99999999",
+                      "etime": "",
+                      "cts_date": "",
+                      "cts_time": "",
+                      "comp_yn": "N",
+                      "exchgubun": "K"
+                  }
+              }
+          },
+          {
+            "label": "주식마스터조회API용(t9945)",
+            "throttle": 2,
+            "func_name": "getMaster",
+            "api_code": "t9945",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t9945",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t9945InBlock": {
+                "gubun": "1"
+              }
+            }
+          },
+          {
+            "label": "신고/신저가(t1442)",
+            "throttle": 1,
+            "api_code": "t1442",
+            "func_name": "getHighLow",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t1442",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1442InBlock": {
+                "gubun": "0",
+                "type1": "0",
+                "type2": "0",
+                "type3": "0",
+                "jc_num": 8,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0,
+                "jc_num2": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "sub_category": "chart",
+        "name": "챠트",
+        "url_part" : "chart",
+        "api_list":[
+          {
+            "label": "기간별투자자매매추이(챠트)(t1665)",
+            "throttle": 1,
+            "api_code": "t1665",
+            "func_name": "getInvestorTrend",
+            "url": "/stock/chart",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t1665",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1665InBlock": {
+                "market": "1",
+                "upcode": "001",
+                "gubun2": "1",
+                "gubun3": "1",
+                "from_date": "20230101",
+                "to_date": "20230619"
+              }
+            }
+          },
+          {
+            "label": "API전용주식챠트(일주월년)(t8410)",
+            "throttle": 1,
+            "func_name": "getDwmChart",
+            "api_code": "t8410",
+            "url": "/stock/chart",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t8410",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t8410InBlock": {
+                "shcode": "078020",
+                "gubun": "2",
+                "qrycnt": 200,
+                "sdate": "",
+                "edate": "",
+                "cts_date": "",
+                "comp_yn": "N",
+                "sujung": "Y"
+              }
+            }
+          },
+          {
+            "label": "주식챠트(틱/n틱)(t8411)",
+            "throttle": 1,
+            "func_name": "getStockTickChart",
+            "api_code": "t8411",
+            "url": "/stock/chart",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t8411",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t8411InBlock": {
+                "shcode": "078020",
+                "ncnt": 1,
+                "qrycnt": 200,
+                "nday": "0",
+                "sdate": "",
+                "stime": "",
+                "edate": "",
+                "etime": "",
+                "cts_date": "",
+                "cts_time": "",
+                "comp_yn": "N"
+              }
+            }
+          },
+          {
+            "label": "주식챠트(N분)(t8412)",
+            "throttle": 1,
+            "api_code": "t8412",
+            "func_name": "getStockMinChart",
+            "url": "/stock/chart",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t8412",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t8412InBlock": {
+                "shcode": "078020",
+                "ncnt": 0,
+                "qrycnt": 0,
+                "nday": "1",
+                "sdate": "1",
+                "stime": "1",
+                "edate": "1",
+                "etime": "1",
+                "cts_date": "1",
+                "cts_time": "1",
+                "comp_yn": "1"
+              }
+            }
+          },
+          {
+            "label": "API용주식멀티현재가조회(t8407)",
+            "throttle": 1,
+            "api_code": "t8407",
+            "func_name": "getMultiQuote",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t8407",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t8407InBlock": {
+                "nrec": 3,
+                "shcode": "078020000660005930"
+              }
+            }
+          },
+
+
+
+          {
+            "label": "체결강도추이(t1475)",
+            "throttle": 1,
+            "api_code": "t1475",
+            "func_name": "getTradeIntensityTrend",
+            "url": "/stock/vp-trend",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1475",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1475InBlock": {
+                "shcode": "001200",
+                "vptype": "0",
+                "datacnt": 0,
+                "date": 0,
+                "time": 0,
+                "rankcnt": 0,
+                "gubun": "0"
+              }
+            }
+          },
+          {
+            "label": "시간별예상체결가(t1486)",
+            "throttle": 2,
+            "api_code": "t1486",
+            "func_name": "getHourlyExpectedExecutionPrice",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1486",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1486InBlock": {
+                "shcode": "001200",
+                "cts_time": " ",
+                "cnt": 20,
+                "exchgubun": "K"
+              }
+            }
+          },
+          {
+            "label": "예상체결가등락율상위조회(t1488)",
+            "throttle": 2,
+            "api_code": "t1488",
+            "func_name": "getTopExpectedChangeRate",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1488",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1488InBlock": {
+                "gubun": "0",
+                "sign": "1",
+                "jgubun": "1",
+                "jongchk": "0x00000080",
+                "idx": 0,
+                "volume": "0",
+                "yesprice": 0,
+                "yeeprice": 0,
+                "yevolume": 0
+              }
+            }
+          },
+          {
+            "label": "주식당일전일분틱조회(t1310)",
+            "throttle": 1,
+            "api_code": "t1310",
+            "func_name": "getIntradayPrevDayTick",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1310",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1310InBlock": {
+                "daygb": "0",
+                "timegb": "0",
+                "shcode": "001200",
+                "endtime": "",
+                "cts_time": "",
+                "exchgubun": "K"
+              }
+            }
+          },
+          {
+            "label": "상/하한가직전(t1427)",
+            "throttle": 1,
+            "api_code": "t1427",
+            "func_name": "getLimitPriceApproach",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1427",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1427InBlock": {
+                "qrygb": "1",
+                "gubun": "0",
+                "signgubun": "1",
+                "diff": 0,
+                "jc_num": 0,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0,
+                "jshex": "c"
+              }
+            }
+          },
+          {
+            "label": "시간대별호가잔량추이(t1471)",
+            "throttle": 1,
+            "api_code": "t1471",
+            "func_name": "getTimeBasedOrderBookVolumeTrend",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1471",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1471InBlock": {
+                "shcode": "001200",
+                "gubun": "00",
+                "time": " ",
+                "cnt": "010",
+                "exchgubun": "K"
+              }
+            }
+          },
+          {
+            "label": "신고/신저가(t1442)",
+            "throttle": 1,
+            "api_code": "t1442",
+            "func_name": "getHighLow",
+            "url": "/stock/market-data",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "tr_cd": "t1442",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1442InBlock": {
+                "gubun": "0",
+                "type1": "0",
+                "type2": "0",
+                "type3": "0",
+                "jc_num": 8,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0,
+                "jc_num2": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "sub_category": "high-item",
+        "name": "상위종목",
+        "url_part" : "high-item",
+        "api_list": [
+          {
+            "label": "등락율상위(t1441)",
+            "throttle": 1,
+            "api_code": "t1441",
+            "func_name": "getTopChange",
+            "url": "/stock/high-item",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json",
+              "tr_cd": "t1441",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1441InBlock": {
+                "gubun1": "1",
+                "gubun2": "1",
+                "gubun3": "1",
+                "jc_num": 0,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0,
+                "jc_num2": 0
+              }
+            }
+          },
+          {
+            "label": "전일동시간대비거래급증(t1466)",
+            "api_code": "t1466",
+            "func_name": "getVolumeSpike",
+            "url": "/stock/high-item",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json",
+              "tr_cd": "t1466",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1466InBlock": {
+                "gubun": "1",
+                "type1": "1",
+                "type2": "1",
+                "jc_num": 0,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0,
+                "jc_num2": 0
+              }
+            }
+          },
+          {
+            "label": "거래대금상위(t1463)",
+            "api_code": "t1463",
+            "func_name": "getTopValue",
+            "url": "/stock/high-item",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json",
+              "tr_cd": "t1463",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1463InBlock": {
+                "gubun": "1",
+                "jnilgubun": "1",
+                "jc_num": 0,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0,
+                "jc_num2": 0
+              }
+            }
+          },
+          {
+            "label": "거래량상위(t1452)",
+            "api_code": "t1452",
+            "func_name": "getTopVolume",
+            "url": "/stock/high-item",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json",
+              "tr_cd": "t1452",
+              "tr_cont": "N",
+              "tr_cont_key": "0"
+            },
+            "body": {
+              "t1452InBlock": {
+                "gubun": "1",
+                "jnilgubun": "1",
+                "sdiff": 0,
+                "ediff": 0,
+                "jc_num": 0,
+                "sprice": 0,
+                "eprice": 0,
+                "volume": 0,
+                "idx": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "sub_category": "item_search",
+        "name": "종목검색",
+        "url_part": "item_search",
+        "api_list": [
+          {
+            "label": "신호조회(t1809)",
+            "api_code": "t1809",
+            "func_name": "getSignal",
+            "url": "/stock/item-search",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1809",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1809InBlock": {
+                "gubun": "0",
+                "jmGb": "0",
+                "jmcode": "",
+                "cts": ""
+              }
+            }
+          },
+          {
+            "label": "종목Q클릭검색(씽큐스마트)(t1825)",
+            "api_code": "t1825",
+            "func_name": "getQClickQuick",
+            "url": "/stock/item-search",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1825",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1825InBlock": {
+                "search_cd": "6001",
+                "gubun": "0"
+              }
+            }
+          },
+          {
+            "label": "종목Q클릭검색리스트조회(씽큐스마트)(t1826)",
+            "api_code": "t1826",
+            "func_name": "getQClickQuickList",
+            "url": "/stock/item-search",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1826",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1826InBlock": {
+                "search_gb": "0"
+              }
+            }
+          },
+          {
+            "label": "서버저장조건 리스트조회(t1866)",
+            "api_code": "t1866",
+            "func_name": "getSavedFilters",
+            "url": "/stock/item-search",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1866",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1866InBlock": {
+                "user_id": "testID",
+                "gb": "0",
+                "group_name": "",
+                "cont": "0",
+                "cont_key": ""
+              }
+            }
+          },
+          {
+            "label": "서버저장조건 검색결과(t1859)",
+            "api_code": "t1859",
+            "func_name": "getSavedFilterResults",
+            "url": "/stock/item-search",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1859",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1859InBlock": {
+                "query_index": ""
+              }
+            }
+          },
+          {
+            "label": "서버저장조건 실시간검색(t1860)",
+            "api_code": "t1860",
+            "func_name": "getRealtimeSavedFilterResults",
+            "url": "/stock/item-search",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1860",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1860InBlock": {
+                "sSysUserFlag" : "U",
+                "sFlag" : "E",
+                "sAlertNum" : "",
+                "query_index" : "callin 0000"
+              }
+            }
+          },
+          {
+            "label": "주식종목조회 API용(t8436)",
+            "api_code": "t8436",
+            "func_name": "getStockList",
+            "url": "/stock/etc",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t8436",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1860InBlock": {
+                "gubun" : "0"
+              }
+            }
+          },
+          {
+            "label": "공매도일별추이(t1927)",
+            "api_code": "t1927",
+            "func_name": "getShortSellDailyTrend",
+            "url": "/stock/etc",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1927",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1927InBlock": {
+                "shcode": "",
+                "date": "",
+                "sdate": "",
+                "edate": ""
+              }
+            }
+          },
+          {
+            "label": "종목별대차거래일간추이(t1941)",
+            "api_code": "t1941",
+            "func_name": "getStockLoanDailyTrend",
+            "url": "/stock/etc",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1941",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1941InBlock": {
+                "shcode": "",
+                "sdate": "",
+                "edate": ""
+              }
+            }
+          },
+          {
+            "label": "종목별잔량/사전공시(t1638)",
+            "api_code": "t1638",
+            "func_name": "getStockOrderVolumeAndPreDisclosure",
+            "url": "/stock/etc",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t1638",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t1638InBlock": {
+                "gubun1": "",
+                "shcode": "",
+                "gubun2": "",
+                "exchgubun": ""
+              }
+            }
+          }
+        ]
+      },
+      {
+        "sub_category": "investinfo",
+        "name": "투자정보",
+        "url_part": "investinfo",
+        "api_list": [
+          {
+            "label": "뉴스본문(t3102)",
+            "api_code": "t3102",
+            "func_name": "getNewsBody",
+            "url": "/stock/investinfo",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t3102",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t3102InBlock": {
+                "sNewsno": "202506091320202007093838"
+              }
+            }
+          },
+          {
+            "label": "종목별증시일정(t3202)",
+            "api_code": "t3202",
+            "func_name": "getStockSchedule",
+            "url": "/stock/investinfo",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t3202",
+              "tr_cont": "N",
+              "tr_cont_key": "",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t3202InBlock": {
+                "shcode": "",
+                "date": ""
+              }
+            }
+          },
+          {
+            "label": "해외지수조회(t3521)",
+            "api_code": "t3521",
+            "func_name": "getForeignIndex",
+            "url": "/stock/investinfo",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t3521",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t3521InBlock": {
+                "kind": "S",
+                "symbol": "DJI@DJI"
+              }
+            }
+          }
+        ]
+      },
+
+      {
+        "sub_category": "investinfo",
+        "name": "투자정보",
+        "url_part": "investinfo",
+        "api_list": [
+          {
+            "label": "FNG_요약(t3320)",
+            "api_code": "t3320",
+            "func_name": "getFNGSummary",
+            "url": "/stock/investinfo",
+            "method": "POST",
+            "headers": {
+              "content-type": "application/json; charset=utf-8",
+              "authorization": "Bearer <ACCESS_TOKEN>",
+              "tr_cd": "t3320",
+              "tr_cont": "N",
+              "tr_cont_key": "0",
+              "mac_address": "<MAC_ADDRESS>"
+            },
+            "body": {
+              "t3320InBlock": {
+                "gicode": "001200"
+              }
+            }
+          }
+
+        ]
+      }
+    ]
+  }

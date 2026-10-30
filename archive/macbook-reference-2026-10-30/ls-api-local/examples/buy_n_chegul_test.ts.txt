@@ -1,0 +1,37 @@
+import {LSStockSDK, LSStockTradingSystem} from '../src';
+
+(async () => {
+  const sdk = await LSStockSDK.getInstance()
+  const tradeSystem = await LSStockTradingSystem.getInstance();
+
+
+  // const anItem = await tradeSystem.startTrade('078020', 1000000, 'trdetype:todo');
+
+
+  sdk.add_trade_hook_for_order('090710',{
+    handleTradeData(data: any) {
+      if(data.header?.tr_cd?.startsWith("SC"))
+        console.log('handleTradeData:', data);
+    }
+  } )
+
+
+  setTimeout(async ()=>{
+    const rslt = await sdk.api.orderStock(  {
+      "IsuNo": "090710",
+      "OrdQty": 1,
+      "OrdPrc": 0,
+      "BnsTpCode": "2",  // 1:매도, 2:매수
+      "OrdprcPtnCode": "03",  // 00@지정가 03@시장가 05@조건부지정가 06@최유리지정가 07@최우선지정가 61@장개시전시간외종가 81@시간외종가 82@시간외단일가
+      "MgntrnCode": "000",  //신용거래코드 000 보통
+      "LoanDt": "",
+      "OrdCndiTpCode": "0",
+      "MbrNo" : "KRX"
+    });
+    for await (const item of rslt) {
+      console.log('222', item);
+    }
+  },2000)
+
+
+})();

@@ -1,0 +1,92 @@
+import {LSStockSDK} from '../src/sdk';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+
+(async () => {
+    console.log('Testing getStockTopVolume API...');
+
+    try {
+        // const sdk = await LSStockSDK.getInstance();
+        console.log('✅ SDK initialized successfully');
+
+        // Test getStockTopVolume function availability
+        if (true) {
+            console.log('✅ getStockTopVolume function is available');
+
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = dirname(__filename);
+
+            dotenv.config({path: resolve(__dirname, '../.env')});
+
+            // Test getStockTopVolume API call
+            try {
+                const sdk = await LSStockSDK.getInstance();
+                console.log('📡 Calling getStockTopVolume API...');
+
+                let resultCount = 0;
+                for await (const data of sdk.api.getStockTopVolume({
+                    gubun: "1",
+                    jnilgubun: "1",   // "1" 당일 , "2" 전일
+                    sdiff: 0,
+                    ediff: 0,
+                    jc_num: 0,
+                    // jc_num: 16794296,
+                    jc_num2: 111,
+                    sprice: 10000,
+                    eprice: 0,
+                    volume: 0,
+                    idx: 0,
+                    exchgubun: "U"
+                })) {
+                    resultCount++;
+                    delete data._orgBody
+                    console.log(`📊 Result ${resultCount}:`, data);
+                    // console.log(`📊 Result ${resultCount}:`, data.hname, data.price, data.volume, data.value);
+
+                    /**
+                     Expected output data should show stocks ranked by trading volume.
+                     Data format should include:
+                     - hname: Stock name (회사명)
+                     - price: Current price (현재가)
+                     - sign: Price change direction (등락구분)
+                     - change: Price change amount (전일대비)
+                     - diff: Change percentage (등락율)
+                     - volume: Trading volume (거래량)
+                     - value: Trading value (거래대금)
+                     - etc.
+                     */
+
+                    // Show first 10 results to avoid too much output
+                    if (resultCount >= 100) {
+                        console.log('⏹️  Stopping after 10 results to avoid too much output');
+                        break;
+                    }
+                }
+
+                if (resultCount === 0) {
+                    console.log('⚠️  No results returned from getStockTopVolume API');
+                } else {
+                    console.log(`✅ getStockTopVolume API test completed successfully with ${resultCount} result(s)`);
+                }
+
+            } catch (apiError) {
+                console.error('❌ Error calling getStockTopVolume API:', apiError);
+
+                // Log additional error details if available
+                if (apiError instanceof Error) {
+                    console.error('   Error message:', apiError.message);
+                    console.error('   Error stack:', apiError.stack);
+                }
+            }
+
+        } else {
+            console.error('❌ getStockTopVolume function is not available in SDK');
+        }
+
+    } catch (sdkError) {
+        console.error('❌ Error initializing SDK:', sdkError);
+    }
+
+    console.log('🏁 getStockTopVolume test completed');
+})();

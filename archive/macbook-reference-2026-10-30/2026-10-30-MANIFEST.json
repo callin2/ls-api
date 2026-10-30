@@ -1,0 +1,298 @@
+{
+  "purpose": "Historical source/evidence preservation only",
+  "owner_repository": "callin2/ls-api",
+  "source_label": "MacBook historical work",
+  "base_revision": "de2be5825df922fa4413bca5a46deb4532e7ac97",
+  "current_support_claim": false,
+  "execution_allowed_by_archive": false,
+  "source_files": [
+    {
+      "project": "ls-api",
+      "path": "package.json",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/package.json.txt",
+      "blob": "d2ff9517d086dc9b202464eee6ffb239a55cf4b0",
+      "sha256": "861deb56f6178b18f20f390e5faa29481dda841c765cf99ca3da36eb73ef23c4",
+      "bytes": 543,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "docs/candle2textcode.md",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/docs/candle2textcode.md.txt",
+      "blob": "d3724ae66a07308582db00be382bffb2b5d872d6",
+      "sha256": "838b2437ea37c5ed443a39ef294a69a3d36a73b13d108c36cff0f8df2d8468f8",
+      "bytes": 7131,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/get5MinCandles_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/get5MinCandles_test.ts.txt",
+      "blob": "751f2d4e28d36a7c67779b2a5384004951924052",
+      "sha256": "a6362ad2cc9d15147305459245667a716374d4524c2779814188dec06466232a",
+      "bytes": 3095,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getStockTheme_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getStockTheme_test.ts.txt",
+      "blob": "784c97285f1faef99153eea24aa2e1b366454b1c",
+      "sha256": "b36fdfe7738b5d8d7768c9ea38f37dc1f6848bd9c97611c7183aab54d3a6a4eb",
+      "bytes": 1958,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getStockPriceTrend_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getStockPriceTrend_test.ts.txt",
+      "blob": "4766444b6ad353c31becea173ac5814bdbc4efea",
+      "sha256": "da4b099f0f488b3c542705f2845de0f8bddd3401d7ac2959835f89e83aa897c3",
+      "bytes": 915,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getSavedFilterResults_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getSavedFilterResults_test.ts.txt",
+      "blob": "d5998f7807311ff05a9f79a75480a06fcd6565f2",
+      "sha256": "e79f3ba47cd76b7a714358d9bf36d294a9d889cda37d4143d57624af5c12ddf9",
+      "bytes": 938,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getIndexPrice.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getIndexPrice.ts.txt",
+      "blob": "20b28f9c75e0ea2090b03388f0c7e5a860b3875d",
+      "sha256": "dd3742dd4c630f95995d6c64dbcfe37c72423a81a0ea32790018e2caf7d9dbd2",
+      "bytes": 897,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getDwmChart_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getDwmChart_test.ts.txt",
+      "blob": "3c59da32b5c147e1a2c2490113e28ebc1f47f71b",
+      "sha256": "790a1b995f4f97ecaad4d7d4a5576e339a6a84655cf190ccb7c04da4c52e91b2",
+      "bytes": 723,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getStockTopChange_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getStockTopChange_test.ts.txt",
+      "blob": "a16401ba3f83ba0bbcc3c2b30f9ad8dad83f50b3",
+      "sha256": "8d0c2ab6e73affd410527ae9e74722826bfa8430c92f9c150e7766121bd5d07c",
+      "bytes": 1150,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/buy_n_chegul_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/buy_n_chegul_test.ts.txt",
+      "blob": "203c042f54fc54de5ba8f8fad566635e783d0dab",
+      "sha256": "74c9dcebf2aa9375a573f7edab0ff1fb59d6a317c82b73209ca0eb93e5e57bb7",
+      "bytes": 1064,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getAllStcokRankExt.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getAllStcokRankExt.ts.txt",
+      "blob": "3f5bb3413f89a69aa2cd9907c5c9cdfee99e4328",
+      "sha256": "a4f33c7e49d027f964924ce48a0d98a71e946c88ed694f1e729fe7d43d23b190",
+      "bytes": 1619,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getAllStcokRankValue.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getAllStcokRankValue.ts.txt",
+      "blob": "59adf297bcd5d0f4cac5a795c6bb4f32fdb880f1",
+      "sha256": "924345877610e08a4fdca036f69e01f1f9f657612c507883fcf2cd49e66a32ed",
+      "bytes": 1672,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/stream_n_pipeline_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/stream_n_pipeline_test.ts.txt",
+      "blob": "d1d2d49e5204d9e5d62b3716cfbf3e71062858c2",
+      "sha256": "285d82b0790f2cfc5a348ec5e30e5b96315d6504500f82e4436aa71110fd3804",
+      "bytes": 3594,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getChegulHistory_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getChegulHistory_test.ts.txt",
+      "blob": "16e1407ae7a0fe946f13b8877b0ef0665b614e2a",
+      "sha256": "7ada861c3b790316d3f5312483be332b38c184ab8b58480e1a596b7a8f6d1f16",
+      "bytes": 1480,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getStockTopVolume_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getStockTopVolume_test.ts.txt",
+      "blob": "c9c89b796187d487b423ba602f3742b4392350da",
+      "sha256": "d1d99f61973c049a465516709963a426103544477a4f108fd2e29eeb2e82ed9b",
+      "bytes": 3569,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getStockPrice_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getStockPrice_test.ts.txt",
+      "blob": "ced2a10ba94ecb4cab7964480d064e4c3aa7a3ce",
+      "sha256": "b2ceb9ff8d035c5d8dd15c4507ea4bf5306fdb450b6b045b7e01a9d67ec9c362",
+      "bytes": 914,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/chegul_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/chegul_test.ts.txt",
+      "blob": "0fb752c13b0baa70a15ef99b5b7d4e453966a850",
+      "sha256": "d2c2977ed3b33440528a4cb724ac20ecb02eac2ba71db554bb63fb25301a2b50",
+      "bytes": 987,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getVolumeSpile_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getVolumeSpile_test.ts.txt",
+      "blob": "db1363f5965fe3a5325492fbd7169494554e992d",
+      "sha256": "142628086a0c99cc3dc19629981de021470099204ef9707e8521b778c0b6b10c",
+      "bytes": 1035,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getSavedFilter_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getSavedFilter_test.ts.txt",
+      "blob": "40ab7fac3810e505369177aa0c433c70aa5d0ecf",
+      "sha256": "008b2fd958e3812fb43a5e816bd893b8e94384849a1f7a1af69b4104844cd80e",
+      "bytes": 1039,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getTradeStream_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getTradeStream_test.ts.txt",
+      "blob": "bc58e9c30f95011f0393043408801f649eedeb85",
+      "sha256": "24d6472bede0883b79a57dfe186fa36d25afc1a168ef0a3cae874bfe7e990eaa",
+      "bytes": 1321,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/database.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/database.ts.txt",
+      "blob": "b26e80d2bbf65aae8f43dd08f6c9bfadd86ade71",
+      "sha256": "6c5308a56a5140bf96d999dfd29550951744ad6433826cf9c001b766d5eabd77",
+      "bytes": 10597,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getStockList_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getStockList_test.ts.txt",
+      "blob": "1c0c93aaf5d310f7dc62051833071940e5220a0c",
+      "sha256": "1cab8ea4ab42463f073eac17376f0b73d450f0e74d0d5998b7ae7a8518f75e3c",
+      "bytes": 652,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/get5MinCandles_test2.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/get5MinCandles_test2.ts.txt",
+      "blob": "05e2a326d85eeb677ad8b0bed31cb3b43d092094",
+      "sha256": "cc7804aa419e24c86277d11a1dc97d83bfc63681a302af3600587287f1d96199",
+      "bytes": 1417,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getStockTimeRange_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getStockTimeRange_test.ts.txt",
+      "blob": "54a5fe9f617a4444e8d245090b456ad50fd5904b",
+      "sha256": "cbc43c14136ca1766897ff7638240ccd6d3efae49b0e0c4cb31f250b9d9efbfd",
+      "bytes": 837,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/trading_stream_example.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/trading_stream_example.ts.txt",
+      "blob": "f1d5c017d3bc999c3f7e3cf306fff225293a023c",
+      "sha256": "cc0670a56ce3f458c7333412ccbdf9a7c13f38360c37b3b23aefdaa4c74febff",
+      "bytes": 6354,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getAllThemes_test.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getAllThemes_test.ts.txt",
+      "blob": "77c22b68569aa936bdb55ee63efad9c555ac7f80",
+      "sha256": "9d44ac4ba9c25c002de8a095f0a98b92faa4812bb828b20fcbd62a4db73b02f0",
+      "bytes": 25806,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/getAllStcokRank.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/getAllStcokRank.ts.txt",
+      "blob": "5e101786ccee056d25f5e59d834a7361b5ff4d60",
+      "sha256": "3873d2dc6958e2d6496129501a101fb81dfaf919622d438e45e2a6a9c2db2402",
+      "bytes": 2116,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "examples/upcode.json",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/examples/upcode.json.txt",
+      "blob": "34372a4e11ac341e8788ed28396daa0f15a27087",
+      "sha256": "3a080c4de195fd8fe3ebd34be623551cf92e60649609b67e1023408df9df8553",
+      "bytes": 13305,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "scripts/candle2hangul.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/scripts/candle2hangul.ts.txt",
+      "blob": "ba838c4ba7e7d21fa9b51a7be50cbb898c449a7f",
+      "sha256": "69226b66100f56371a67d6c4ee4d7e9d8b668c4966ac8c8887ed46ad88d5cbfd",
+      "bytes": 20892,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "src/api-utils.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/src/api-utils.ts.txt",
+      "blob": "70b4c56d6f82ffb0589bcc8f2ae3a84dad6d2c1a",
+      "sha256": "31aaf293a4f0ddf017260749e7e11444ff4eaa93c960be97d1e1b408aebcb422",
+      "bytes": 10818,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "src/sdk.ts",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/src/sdk.ts.txt",
+      "blob": "ba36508a8d86e1200811f3fa1703818d4c2172d3",
+      "sha256": "a19c1f7895cc2ba8db03ff16aa560a8b8717d79df3dea0e1e0d35a0e05efd26e",
+      "bytes": 21664,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    },
+    {
+      "project": "ls-api",
+      "path": "src/api-spec/주식.json",
+      "destination": "archive/macbook-reference-2026-10-30/ls-api-local/src/api-spec/주식.json.txt",
+      "blob": "62d466304c3238855b1edfc872ed36c0ca6338d0",
+      "sha256": "bca5c578cdf149d9c1f834e7ae93f8e96ec1138dd9d618fd417b8a2674553312",
+      "bytes": 47426,
+      "owner_reason": "Same package name and exact overlapping source bytes with existing user-owned ls-api repository; existing public scope unchanged."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+import {LSStockSDK} from '../src';
+import {fileURLToPath} from "url";
+import {dirname, resolve} from "path";
+import dotenv from "dotenv";
+import {filter, tap} from "rxjs/operators";
+
+async function sleep(number: number) {
+    return new Promise(resolve => setTimeout(resolve, number));
+}
+
+(async () => {
+    console.log('Testing getIndStocks API...');
+
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+
+    dotenv.config({path: resolve(__dirname, '../.env')});
+
+    try {
+        const sdk = await LSStockSDK.getInstance();
+        const stream = sdk.getTradeStream("128820",{intervalMinutes:1}); // .subscribe( console.log )
+
+        stream.subscribe(console.log)
+        // sdk.add_trade_hook_for_order("128820", {handleTradeData: console.log})
+
+        // stream.pipe(
+        //     filter(data => !data.isHistorical), // Only real-time data
+        //     tap(data => {
+        //
+        //         if (Math.abs(data.diff) > 500) {
+        //             console.log(`⚠️   significant move: ${data.diff} at ${data.chetime}`);
+        //         }
+        //     })
+        // ).subscribe(console.log);
+
+
+    } catch (sdkError) {
+        console.error('❌ Error initializing SDK:', sdkError);
+    }
+
+    // console.log('🏁 getIndStocks test completed');
+})();

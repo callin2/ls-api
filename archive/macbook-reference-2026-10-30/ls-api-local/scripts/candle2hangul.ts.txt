@@ -1,0 +1,612 @@
+// 캔들 표기법 변환 프로그램 (TypeScript)
+
+interface Candle {
+    date: string;
+    time: string;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    jdiff_vol: number;
+    value: number;
+    jongchk: number;
+    rate: string;
+    sign: string;
+}
+
+interface CandleResult {
+    date: string;
+    time: string;
+    candle_code: string;
+    relation_code: string;
+    candle_char: string;
+    relation_char: string;
+    hangul: string;
+    raw: Candle;
+}
+
+// 1. 초성/중성/종성 매핑 테이블
+
+const V_CHOSUNG: Record<string, string> = {
+    'V1': 'ㅇ',  // 극소
+    'V2': 'ㄴ',  // 보통
+    'V3': 'ㄷ',  // 확대
+    'V4': 'ㄹ'   // 폭발
+};
+
+const D_JUNGSUNG: Record<string, string> = {
+    'D0': 'ㅡ',  // 도지
+    'D1': 'ㅏ',  // 약양
+    'D2': 'ㅑ',  // 중양
+    'D3': 'ㅗ',  // 강양
+    'D4': 'ㅓ',  // 약음
+    'D5': 'ㅕ',  // 중음
+    'D6': 'ㅜ'   // 강음
+};
+
+const S_JONGSUNG: Record<string, string> = {
+    'S0': 'ㅁ',  // 꼬리 없음
+    'S1': 'ㅂ',  // 양쪽 비슷
+    'S2': 'ㅅ',  // 윗꼬리 우세
+    'S3': 'ㅈ'   // 아랫꼬리 우세
+};
+
+const PB_CHOSUNG: Record<string, string> = {
+    'PB0': 'ㅇ',  // 안에
+    'PB1': 'ㄷ',  // 덮음
+    'PB2': 'ㄱ',  // 위쪽 걸침
+    'PB3': 'ㅅ',  // 위로 분리
+    'PB4': 'ㄴ',  // 아래쪽 걸침
+    'PB5': 'ㅂ',  // 아래로 분리
+    'PB_NONE': 'ㅎ'  // 이전 봉 없음
+};
+
+const Q_JUNGSUNG: Record<string, string> = {
+    'Q0': 'ㅠ',  // 극감소
+    'Q1': 'ㅜ',  // 감소
+    'Q2': 'ㅓ',  // 약간 감소/유지
+    'Q3': 'ㅡ',  // 비슷
+    'Q4': 'ㅏ',  // 약간 증가
+    'Q5': 'ㅗ',  // 증가
+    'Q6': 'ㅛ',  // 폭발 증가
+    'Q_NONE': 'ㅣ'  // 이전 봉 없음
+};
+
+const PR_JONGSUNG: Record<string, string> = {
+    'PR0': 'ㅇ',  // 안에
+    'PR1': 'ㄷ',  // 덮음
+    'PR2': 'ㄱ',  // 위쪽 걸침
+    'PR3': 'ㅅ',  // 위로 분리
+    'PR4': 'ㄴ',  // 아래쪽 걸침
+    'PR5': 'ㅂ',  // 아래로 분리
+    'PR_NONE': 'ㅎ'  // 이전 봉 없음
+};
+
+// 한글 조합 함수
+function combineHangul(chosung: string, jungsung: string, jongsung: string): string {
+    const CHOSUNG_LIST = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+    const JUNGSUNG_LIST = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
+    const JONGSUNG_LIST = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+
+    const choIdx = CHOSUNG_LIST.indexOf(chosung);
+    const jungIdx = JUNGSUNG_LIST.indexOf(jungsung);
+    const jongIdx = JONGSUNG_LIST.indexOf(jongsung);
+
+    const unicodeVal = 0xAC00 + (choIdx * 21 * 28) + (jungIdx * 28) + jongIdx;
+    return String.fromCharCode(unicodeVal);
+}
+
+// 한글 분해 함수
+function decomposeHangul(char: string): { chosung: string; jungsung: string; jongsung: string } {
+    const CHOSUNG_LIST = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+    const JUNGSUNG_LIST = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
+    const JONGSUNG_LIST = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+
+    const code = char.charCodeAt(0) - 0xAC00;
+    const choIdx = Math.floor(code / (21 * 28));
+    const jungIdx = Math.floor((code % (21 * 28)) / 28);
+    const jongIdx = code % 28;
+
+    return {
+        chosung: CHOSUNG_LIST[choIdx],
+        jungsung: JUNGSUNG_LIST[jungIdx],
+        jongsung: JONGSUNG_LIST[jongIdx] || ''
+    };
+}
+
+// 역매핑 테이블 (초성->코드)
+const V_CHOSUNG_REV: Record<string, string> = Object.fromEntries(
+    Object.entries(V_CHOSUNG).map(([k, v]) => [v, k])
+);
+
+const D_JUNGSUNG_REV: Record<string, string> = Object.fromEntries(
+    Object.entries(D_JUNGSUNG).map(([k, v]) => [v, k])
+);
+
+const S_JONGSUNG_REV: Record<string, string> = Object.fromEntries(
+    Object.entries(S_JONGSUNG).map(([k, v]) => [v, k])
+);
+
+const PB_CHOSUNG_REV: Record<string, string> = Object.fromEntries(
+    Object.entries(PB_CHOSUNG).map(([k, v]) => [v, k])
+);
+
+const Q_JUNGSUNG_REV: Record<string, string> = Object.fromEntries(
+    Object.entries(Q_JUNGSUNG).map(([k, v]) => [v, k])
+);
+
+const PR_JONGSUNG_REV: Record<string, string> = Object.fromEntries(
+    Object.entries(PR_JONGSUNG).map(([k, v]) => [v, k])
+);
+
+// 코드별 설명 매핑
+const V_DESC: Record<string, string> = {
+    'V1': '극소 변동성',
+    'V2': '보통 변동성',
+    'V3': '확대 변동성',
+    'V4': '폭발 변동성'
+};
+
+const D_DESC: Record<string, string> = {
+    'D0': '도지',
+    'D1': '약한 양봉',
+    'D2': '중간 양봉',
+    'D3': '강한 양봉',
+    'D4': '약한 음봉',
+    'D5': '중간 음봉',
+    'D6': '강한 음봉'
+};
+
+const S_DESC: Record<string, string> = {
+    'S0': '꼬리 없음',
+    'S1': '양쪽 꼬리 비슷',
+    'S2': '윗꼬리 우세',
+    'S3': '아랫꼬리 우세'
+};
+
+const PB_DESC: Record<string, string> = {
+    'PB0': '몸통이 이전 안에 포함',
+    'PB1': '몸통이 이전을 덮음',
+    'PB2': '몸통이 위쪽 걸침',
+    'PB3': '몸통이 위로 분리(갭업)',
+    'PB4': '몸통이 아래쪽 걸침',
+    'PB5': '몸통이 아래로 분리(갭다운)',
+    'PB_NONE': '첫 캔들'
+};
+
+const Q_DESC: Record<string, string> = {
+    'Q0': '거래량 극감소',
+    'Q1': '거래량 감소',
+    'Q2': '거래량 약간 감소/유지',
+    'Q3': '거래량 비슷',
+    'Q4': '거래량 약간 증가',
+    'Q5': '거래량 증가',
+    'Q6': '거래량 폭발적 증가',
+    'Q_NONE': '첫 캔들'
+};
+
+const PR_DESC: Record<string, string> = {
+    'PR0': '레인지가 이전 안에 포함',
+    'PR1': '레인지가 이전을 덮음',
+    'PR2': '레인지가 위쪽 걸침',
+    'PR3': '레인지가 위로 분리(갭업)',
+    'PR4': '레인지가 아래쪽 걸침',
+    'PR5': '레인지가 아래로 분리(갭다운)',
+    'PR_NONE': '첫 캔들'
+};
+
+// 한글 코드를 텍스트 설명으로 변환하는 함수
+export function decodeHangulCandle(hangulCode: string): string {
+    // 스페이스 제거하고 처리
+    const cleanCode = hangulCode.replace(/\s+/g, '');
+
+    if (cleanCode.length % 2 !== 0) {
+        return '오류: 한글 코드는 2글자 단위여야 합니다.';
+    }
+
+    const results: string[] = [];
+    const errors: string[] = [];
+    let candleIndex = 1;
+
+    for (let i = 0; i < cleanCode.length; i += 2) {
+        const candleChar = cleanCode[i];
+        const relationChar = cleanCode[i + 1];
+
+        // 캔들 자체 디코딩
+        const candleDecomp = decomposeHangul(candleChar);
+        const V = V_CHOSUNG_REV[candleDecomp.chosung];
+        const D = D_JUNGSUNG_REV[candleDecomp.jungsung];
+        const S = S_JONGSUNG_REV[candleDecomp.jongsung];
+
+        // 캔들 에러 체크
+        const candleErrors: string[] = [];
+        if (!V) candleErrors.push(`초성 '${candleDecomp.chosung}'은(는) 유효하지 않은 변동성 코드입니다`);
+        if (!D) candleErrors.push(`중성 '${candleDecomp.jungsung}'은(는) 유효하지 않은 방향성 코드입니다`);
+        if (!S) candleErrors.push(`종성 '${candleDecomp.jongsung || '(없음)'}' 은(는) 유효하지 않은 꼬리 코드입니다`);
+
+        // 관계 디코딩
+        const relationDecomp = decomposeHangul(relationChar);
+        const PB = PB_CHOSUNG_REV[relationDecomp.chosung];
+        const Q = Q_JUNGSUNG_REV[relationDecomp.jungsung];
+        const PR = PR_JONGSUNG_REV[relationDecomp.jongsung];
+
+        // 관계 에러 체크
+        const relationErrors: string[] = [];
+        if (!PB) relationErrors.push(`초성 '${relationDecomp.chosung}'은(는) 유효하지 않은 몸통위치 코드입니다`);
+        if (!Q) relationErrors.push(`중성 '${relationDecomp.jungsung}'은(는) 유효하지 않은 거래량 코드입니다`);
+        if (!PR) relationErrors.push(`종성 '${relationDecomp.jongsung || '(없음)'}' 은(는) 유효하지 않은 레인지위치 코드입니다`);
+
+        // 에러가 있으면 에러 메시지 추가
+        if (candleErrors.length > 0 || relationErrors.length > 0) {
+            errors.push(`\n[캔들${candleIndex}] ${candleChar}${relationChar} - 해석 오류`);
+            if (candleErrors.length > 0) {
+                errors.push(`  캔들 글자 '${candleChar}' 오류:`);
+                candleErrors.forEach(err => errors.push(`    - ${err}`));
+            }
+            if (relationErrors.length > 0) {
+                errors.push(`  관계 글자 '${relationChar}' 오류:`);
+                relationErrors.forEach(err => errors.push(`    - ${err}`));
+            }
+        } else {
+            // 에러가 없으면 정상 출력
+            const candleDesc = [
+                V_DESC[V],
+                D_DESC[D],
+                S_DESC[S]
+            ].join(', ');
+
+            const relationDesc = [
+                PB_DESC[PB],
+                Q_DESC[Q],
+                PR_DESC[PR]
+            ].join(', ');
+
+            results.push(`[캔들${candleIndex}] ${candleChar}${relationChar}`);
+            results.push(`  캔들: ${candleDesc}`);
+            results.push(`  관계: ${relationDesc}`);
+            results.push('');
+        }
+
+        candleIndex++;
+    }
+
+    // 에러가 있으면 에러만 반환
+    if (errors.length > 0) {
+        return `해석 오류가 발견되었습니다:\n${errors.join('\n')}`;
+    }
+
+    return results.join('\n');
+}
+
+// 2. 캔들 분석 함수들
+
+function getVCode(candle: Candle, rangeMa: number): string {
+    const rangeVal = candle.high - candle.low;
+    if (rangeMa === 0) return 'V2';
+
+    const rangeRel = (rangeVal / rangeMa) * 100;
+
+    if (rangeRel < 50) return 'V1';
+    if (rangeRel < 150) return 'V2';
+    if (rangeRel < 250) return 'V3';
+    return 'V4';
+}
+
+function getDCode(candle: Candle): string {
+    const { open: O, close: C, high: H, low: L } = candle;
+    const body = Math.abs(C - O);
+    const rangeVal = H - L;
+
+    if (rangeVal === 0) return 'D0';
+
+    const bodyPct = (body / rangeVal) * 100;
+    const bodyOverO = O > 0 ? (body / O) * 100 : 0;
+
+    // 도지 판정
+    if (bodyPct <= 2 || bodyOverO <= 0.5) return 'D0';
+
+    // 양봉/음봉 구분
+    if (C > O) {  // 양봉
+        if (bodyPct <= 40) return 'D1';
+        if (bodyPct <= 70) return 'D2';
+        return 'D3';
+    } else {  // 음봉
+        if (bodyPct <= 40) return 'D4';
+        if (bodyPct <= 70) return 'D5';
+        return 'D6';
+    }
+}
+
+function getSCode(candle: Candle): string {
+    const { open: O, close: C, high: H, low: L } = candle;
+    const rangeVal = H - L;
+
+    if (rangeVal === 0) return 'S0';
+
+    const U = H - Math.max(O, C);  // 윗꼬리
+    const Lw = Math.min(O, C) - L;  // 아랫꼬리
+
+    const uPct = (U / rangeVal) * 100;
+    const lwPct = (Lw / rangeVal) * 100;
+
+    // 꼬리 거의 없음
+    if (uPct <= 5 && lwPct <= 5) return 'S0';
+
+    // 양쪽 비슷
+    const maxShadow = Math.max(U, Lw);
+    if (maxShadow > 0) {
+        const shadowSimRatio = (Math.abs(U - Lw) / maxShadow) * 100;
+        if (shadowSimRatio <= 20) return 'S1';
+    }
+
+    // 윗꼬리 우세 vs 아랫꼬리 우세
+    return uPct > lwPct ? 'S2' : 'S3';
+}
+
+function getPositionCode(prevLow: number, prevHigh: number, currLow: number, currHigh: number): string {
+    // 뒤가 앞 안에 완전 포함
+    if (prevLow <= currLow && currHigh <= prevHigh) return 'P0';
+    // 뒤가 앞을 완전히 덮음
+    if (currLow < prevLow && prevHigh < currHigh) return 'P1';
+    // 위쪽 걸침
+    if (prevLow <= currLow && currLow < prevHigh && currHigh > prevHigh) return 'P2';
+    // 위로 분리
+    if (currLow >= prevHigh) return 'P3';
+    // 아래쪽 걸침
+    if (currLow < prevLow && prevLow < currHigh && currHigh <= prevHigh) return 'P4';
+    // 아래로 분리
+    if (currHigh <= prevLow) return 'P5';
+
+    return 'P0';  // 기본값
+}
+
+function getQCode(prevVol: number, currVol: number): string {
+    if (prevVol === 0) return 'Q3';
+
+    const volRel = (currVol / prevVol) * 100;
+
+    if (volRel < 40) return 'Q0';
+    if (volRel < 70) return 'Q1';
+    if (volRel < 90) return 'Q2';
+    if (volRel <= 110) return 'Q3';
+    if (volRel <= 150) return 'Q4';
+    if (volRel <= 250) return 'Q5';
+    return 'Q6';
+}
+
+// 3. 메인 변환 함수
+export function candleToHangul(candles: Candle[]): CandleResult[] {
+    const results: CandleResult[] = [];
+    const N = Math.min(60, candles.length);
+
+    for (let i = 0; i < candles.length; i++) {
+        const candle = candles[i];
+
+        // range_ma 계산
+        let rangeMa: number;
+        if (i < N) {
+            rangeMa = candles.slice(0, i + 1).reduce((sum, c) => sum + (c.high - c.low), 0) / (i + 1);
+        } else {
+            rangeMa = candles.slice(i - N + 1, i + 1).reduce((sum, c) => sum + (c.high - c.low), 0) / N;
+        }
+
+        // 캔들 자체 코드
+        const V = getVCode(candle, rangeMa);
+        const D = getDCode(candle);
+        const S = getSCode(candle);
+
+        // 캔들 자체 한글
+        const candleChar = combineHangul(
+            V_CHOSUNG[V],
+            D_JUNGSUNG[D],
+            S_JONGSUNG[S]
+        );
+
+        // 관계 코드
+        let PB: string, Q: string, PR: string;
+
+        if (i === 0) {
+            // 첫 캔들
+            PB = 'PB_NONE';
+            Q = 'Q_NONE';
+            PR = 'PR_NONE';
+        } else {
+            const prev = candles[i - 1];
+
+            // 몸통 위치
+            const prevBodyLow = Math.min(prev.open, prev.close);
+            const prevBodyHigh = Math.max(prev.open, prev.close);
+            const currBodyLow = Math.min(candle.open, candle.close);
+            const currBodyHigh = Math.max(candle.open, candle.close);
+            PB = getPositionCode(prevBodyLow, prevBodyHigh, currBodyLow, currBodyHigh).replace('P', 'PB');
+
+            // 레인지 위치
+            PR = getPositionCode(prev.low, prev.high, candle.low, candle.high).replace('P', 'PR');
+
+            // 거래량
+            Q = getQCode(prev.jdiff_vol, candle.jdiff_vol);
+        }
+
+        // 관계 한글
+        const relationChar = combineHangul(
+            PB_CHOSUNG[PB],
+            Q_JUNGSUNG[Q],
+            PR_JONGSUNG[PR]
+        );
+
+        results.push({
+            date: candle.date,
+            time: candle.time,
+            candle_code: `${V}-${D}-${S}`,
+            relation_code: `${PB}-${Q}-${PR}`,
+            candle_char: candleChar,
+            relation_char: relationChar,
+            hangul: `${candleChar}${relationChar}`,
+            raw: candle
+        });
+    }
+
+    return results;
+}
+
+// 한글 시퀀스를 날짜별로 줄바꿈하여 반환하는 헬퍼 함수
+export function formatHangulByDate(results: CandleResult[], debug: boolean = false): string {
+    if (results.length === 0) return '';
+
+    const lines: string[] = [];
+    let currentDate = results[0].date;
+    let currentLine = results[0].hangul;
+
+    if (debug) {
+        console.log(`[DEBUG] 캔들 0: 날짜=${results[0].date}, 시간=${results[0].time}, 한글=${results[0].hangul}`);
+    }
+
+    for (let i = 1; i < results.length; i++) {
+        if (debug) {
+            console.log(`[DEBUG] 캔들 ${i}: 날짜=${results[i].date}, 시간=${results[i].time}, 한글=${results[i].hangul}`);
+        }
+
+        if (results[i].date !== currentDate) {
+            // 날짜가 바뀌면 현재 라인을 저장하고 새 라인 시작
+            if (debug) {
+                console.log(`[DEBUG] *** 날짜 변경 감지: ${currentDate} -> ${results[i].date} ***`);
+                console.log(`[DEBUG] 현재 라인 저장: ${currentLine}`);
+            }
+            lines.push(currentLine);
+            currentDate = results[i].date;
+            currentLine = results[i].hangul;
+        } else {
+            // 같은 날짜면 스페이스와 함께 이어붙이기
+            currentLine += ' ' + results[i].hangul;
+            if (debug) {
+                console.log(`[DEBUG] 같은 날짜, 이어붙임: ${currentLine}`);
+            }
+        }
+    }
+
+    // 마지막 라인 추가
+    if (debug) {
+        console.log(`[DEBUG] 마지막 라인 저장: ${currentLine}`);
+    }
+    lines.push(currentLine);
+
+    if (debug) {
+        console.log(`[DEBUG] 총 ${lines.length}개 라인 생성`);
+    }
+
+    return lines.join('\n');
+}
+
+// // 사용 예시
+const testCandles: Candle[] = [
+    // 2025-12-04 데이터
+    {
+        date: '20251204',
+        time: '153000',
+        open: 118400,
+        high: 118400,
+        low: 118400,
+        close: 118400,
+        jdiff_vol: 16574,
+        value: 1962,
+        jongchk: 0,
+        rate: '0.00',
+        sign: '5'
+    },
+    {
+        date: '20251204',
+        time: '153500',
+        open: 118400,
+        high: 118600,
+        low: 118300,
+        close: 118500,
+        jdiff_vol: 25000,
+        value: 2950,
+        jongchk: 0,
+        rate: '0.08',
+        sign: '2'
+    },
+    {
+        date: '20251204',
+        time: '154000',
+        open: 118500,
+        high: 118700,
+        low: 118200,
+        close: 118300,
+        jdiff_vol: 18000,
+        value: 2130,
+        jongchk: 0,
+        rate: '-0.17',
+        sign: '5'
+    },
+    // 2025-12-05 데이터 (날짜 변경)
+    {
+        date: '20251205',
+        time: '090500',
+        open: 118300,
+        high: 118800,
+        low: 118100,
+        close: 118600,
+        jdiff_vol: 35000,
+        value: 4140,
+        jongchk: 0,
+        rate: '0.25',
+        sign: '2'
+    },
+    {
+        date: '20251205',
+        time: '091000',
+        open: 118600,
+        high: 119000,
+        low: 118500,
+        close: 118900,
+        jdiff_vol: 42000,
+        value: 4980,
+        jongchk: 0,
+        rate: '0.51',
+        sign: '2'
+    }
+];
+
+// 실행
+// const result = candleToHangul(testCandles);
+// const hangulSequence = result.map(r => r.hangul).join('');
+// console.log('전체 시퀀스 (한 줄):', hangulSequence);
+//
+// console.log('\n=== 날짜별 줄바꿈 적용 (스페이스 포함) ===');
+// const formattedByDate = formatHangulByDate(result, false);
+// console.log(formattedByDate);
+//
+// console.log('\n\n=== 첫 3개 캔들 디코딩 (스페이스 없음) ===\n');
+// const first3Candles = result.slice(0, 3).map(r => r.hangul).join('');
+// console.log(decodeHangulCandle(first3Candles));
+//
+// console.log('\n=== 첫 3개 캔들 디코딩 (스페이스 포함) ===\n');
+// const first3WithSpace = result.slice(0, 3).map(r => r.hangul).join(' ');
+// console.log(`입력: "${first3WithSpace}"\n`);
+// console.log(decodeHangulCandle(first3WithSpace));
+
+// 오류 테스트 (잘못된 글자)
+// console.log('\n=== 오류 테스트 (잘못된 글자 포함) ===\n');
+// const errorExample = '석낮 가나다라';
+// console.log(`입력: "${errorExample}"\n`);
+// console.log(decodeHangulCandle(errorExample));
+
+// 정상 테스트
+console.log('\n\n=== 정상 테스트 ===\n');
+const normalExample = `둦븝 듲븐 돕극 돕슥 댲슥 롲슥 럇극 럇슥 룻든 룻븐 댯은 녖은 늡븡 댯극 늣슥 늡은 녖븐 냣극 읏응 읏응 눔는 늣응 녓는 늣븐 읏븡 눗는 둦븝 늣븐 댯듣 늦승 읏응 늣븐 늣븐 늦응 읏븡 늣슥 늦은 음븡 늣응 읏응 늣윽 늦은 눔능 늦극 늦슥 덪 븐 읒응 눚븐 녑븐 눚븐 놎능 늦응 늦은 늦윽 늦등 늦응 음응 늦은 늣윽 냡극`;
+console.log(`입력: "${normalExample}"\n`);
+console.log(decodeHangulCandle(normalExample));
+
+// // 사용자 예제 테스트
+// console.log('\n\n=== 사용자 예제 테스트 ===\n');
+// // const userExample = '릇숫룾봅듯웅릇속릊얻릇번늦언듯욱늦됸듲반늣븅늡웅늦본늣반듲논늣융늦승늦앙늡붕늦동늣넉늣앙늦뇬듲는늡융늣반늣본늦운듭듣늡웅늦승읏엉읏웅늣삭음능늣악늠겅늣윽늦승늡븡읏붕늣뵨늦반읒융늡속늡숙읏엉늦욘늣국늦석늠넝듲굗늦융늦삭읏웅늠논음응음엉늣옥늦숭늦궁늣방늡삭늡웅읏븡음승늡욘늦숭읒앙늦삭음웅늣옥늣석늣속듯속늡슝음숏';
+// const userExample = `둦븝 듲븐 돕극 돕슥 댲슥 롲슥 럇극 럇슥 룻든 룻븐`;
+// console.log(`입력: (긴 예제, 일부만 표시)...\n`);
+// const decoded = decodeHangulCandle(userExample);
+// if (decoded.startsWith('해석 오류')) {
+//     console.log(decoded);
+// } else {
+//     const lines = decoded.split('\n');
+//     console.log(lines.slice(0, 20).join('\n') + '\n... (생략)');
+// }
